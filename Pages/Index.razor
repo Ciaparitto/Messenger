@@ -1,0 +1,59 @@
+﻿@page "/"
+
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+<PageTitle>Index</PageTitle>
+
+<h1>asddasasdasdasd</h1>
+
+@if (_hubConnection == null)
+{
+    <h1>asddasasdasdasd</h1>
+    <button onclick="@Connect">Polacz</button>
+}
+else
+{
+    <button onclick="@ToAll">powiadom</button>
+}
+
+@code {
+    private string GroupName { get; set; } = "";
+
+    private HubConnection? _hubConnection;
+
+    private async Task Connect()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
+            .Build();
+
+        _hubConnection.On<string>("ReceiveNotification", (message) =>
+        {
+            Console.WriteLine(message);
+        });
+
+        await _hubConnection.StartAsync();
+        if(_hubConnection != null)
+        {
+            Console.WriteLine("dziala");
+        }
+
+    }
+
+
+
+    private async Task ToAll()
+    {
+        Http.PostAsync("/api/test", null);
+        Console.WriteLine("dzialadziala");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if(_hubConnection != null){
+    await _hubConnection.DisposeAsync();
+        }
+    }
+}
