@@ -19,7 +19,7 @@ namespace messager.Controllers
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            await _hubContext.Clients.All.ToAll("To all");
+            await _hubContext.Clients.All.ToAll("testczydziala");
             return Ok();
         }
     }

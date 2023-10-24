@@ -15,11 +15,12 @@
 }
 else
 {
+    <input type="text" name="Message" @bind="Message" />
     <button onclick="@ToAll">powiadom</button>
 }
 
 @code {
-    private string GroupName { get; set; } = "";
+    public string Message { get; set; } = "";
 
     private HubConnection? _hubConnection;
 
@@ -46,8 +47,9 @@ else
 
     private async Task ToAll()
     {
-        Http.PostAsync("/api/test", null);
+        await _hubConnection.InvokeAsync("ToAll", Message);
         Console.WriteLine("dzialadziala");
+       
     }
 
     public async ValueTask DisposeAsync()
