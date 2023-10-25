@@ -2,53 +2,65 @@
 
 @inject NavigationManager Navigation
 @inject HttpClient Http
+@using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
+@using System.Security.Claims;
+@using messager.models;
 @implements IAsyncDisposable
 <PageTitle>Index</PageTitle>
-
-<h1>asddasasdasdasd</h1>
-
+<html>
+<body>
 @if (_hubConnection == null)
 {
-    <h1>asddasasdasdasd</h1>
+ 
     <button onclick="@Connect">Polacz</button>
 }
 else
 {
+   
     <input type="text" name="Message" @bind="Message" />
     <button onclick="@ToAll">powiadom</button>
 }
+<ul>
+   
+</ul>
+</body>
+
+</html>
+
 
 @code {
     public string Message { get; set; } = "";
+    public string _RenderMessage { get; set; } = "";
+    private readonly UserManager<UserModel> _userManager;
+    //pobierz USERID
 
     private HubConnection? _hubConnection;
-
     private async Task Connect()
     {
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
             .Build();
-
+        
+       
         _hubConnection.On<string>("ReceiveNotification", (message) =>
         {
+           
             Console.WriteLine(message);
+           
         });
 
         await _hubConnection.StartAsync();
-        if(_hubConnection != null)
-        {
-            Console.WriteLine("dziala");
-        }
-
     }
-
-
-
+    public void RenderMessage(string message)
+    {
+        _RenderMessage = message;
+        Console.WriteLine("dziala");
+        StateHasChanged();
+    }
     private async Task ToAll()
     {
         await _hubConnection.InvokeAsync("ToAll", Message);
-        Console.WriteLine("dzialadziala");
        
     }
 

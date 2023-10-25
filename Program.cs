@@ -1,7 +1,9 @@
 using messager;
 using messager.Data;
+using messager.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,11 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddDbContext<AppDbContext>(builder =>
+{
+    builder.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbTest;Integrated Security=True");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,5 +35,6 @@ app.UseRouting();
 app.MapHub<AppHub>("/testhub");
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
-
+app.UseAuthentication();
+app.UseAuthorization(); 
 app.Run();
