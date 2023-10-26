@@ -1,8 +1,12 @@
 using messager;
 using messager.Data;
+using messager.models;
 using messager.Services;
+using messager.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,10 +18,12 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<AppDbContext>(builder =>
 {
-    builder.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbTest;Integrated Security=True");
+    builder.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbMessenger;Integrated Security=True");
 });
+builder.Services.AddIdentity<UserModel, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,5 +42,9 @@ app.MapHub<AppHub>("/testhub");
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.UseAuthentication();
-app.UseAuthorization(); 
+app.UseAuthorization();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();

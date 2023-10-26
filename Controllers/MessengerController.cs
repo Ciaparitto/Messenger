@@ -2,25 +2,28 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using messager;
+using Microsoft.EntityFrameworkCore;
 
 namespace messager.Controllers
 {
-    [ApiController]
-    [Route("/api/[controller]")]
+
     public class MessengerController : Controller
     {
-        private readonly IHubContext<AppHub, IAppHub> _hubContext;
-
-        public MessengerController(IHubContext<AppHub, IAppHub> hubContext)
-        {
-            _hubContext = hubContext;
-
-        }
-        [HttpPost]
-        public async Task<IActionResult> Post()
-        {
-            await _hubContext.Clients.All.ToAll("testczydziala");
-            return Ok();
-        }
-    }
+		private readonly AppDbContext _Context;
+		public MessengerController(AppDbContext context)
+		{
+			_Context = context;
+		}
+		[HttpGet]
+		public IActionResult pickuser()
+		{
+			var users = _Context.Users.ToList();
+			return View(users);
+		}
+		[HttpPost]
+		public IActionResult pickuser(string pickeduserid)
+		{
+			return RedirectToAction("Chat", "messenger", new { reciverid = pickeduserid });
+		}
+	}
 }

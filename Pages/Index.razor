@@ -1,10 +1,11 @@
-﻿@page "/"
-
+﻿@page "/chat"
 @inject NavigationManager Navigation
 @inject HttpClient Http
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
+@using messager.Services.Interfaces;
+@using messager.Services;
 @using messager.models;
 @implements IAsyncDisposable
 <PageTitle>Index</PageTitle>
@@ -33,7 +34,8 @@ else
     public string Message { get; set; } = "";
     public string _RenderMessage { get; set; } = "";
     private readonly UserManager<UserModel> _userManager;
-    //pobierz USERID
+    private readonly IUserService _userService;
+   
 
     private HubConnection? _hubConnection;
     private async Task Connect()
@@ -49,7 +51,7 @@ else
             Console.WriteLine(message);
            
         });
-
+        UserModel _User = await _userService.GetLoggedUser();
         await _hubConnection.StartAsync();
     }
     public void RenderMessage(string message)

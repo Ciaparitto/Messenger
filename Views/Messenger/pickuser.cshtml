@@ -1,0 +1,10 @@
+﻿@model IEnumerable<messager.models.UserModel>
+@foreach (var user in Model)
+{
+	<form method="post" action="/formdata">
+	
+	<p>@user.UserName</p>
+	<button type="submit" name="reciverid" value="@user.Id">Napisz</button>
+	
+	</form>
+}
