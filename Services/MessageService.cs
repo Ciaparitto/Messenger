@@ -22,7 +22,7 @@ namespace messager.Services
             var _User = _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             var Message = new Message{
                Content = messagecontent,
-               Creatorid = _User.Id,
+               Creatorid = _User.Id.ToString(),
                Reciverid = reciverid
            };
             _context.Messages.Add(Message);

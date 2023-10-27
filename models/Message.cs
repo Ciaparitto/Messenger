@@ -9,7 +9,7 @@ namespace messager.models
         [Required]
         public string Content { get; set; }
         [Required]
-        public int Creatorid { get; set; }
+        public string Creatorid { get; set; }
         [Required]
         public string Reciverid { get; set; }
 

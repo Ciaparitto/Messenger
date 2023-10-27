@@ -1,6 +1,10 @@
 ﻿@page "/chat"
+@page "/chat/{ReciverIdForm}"
 @inject NavigationManager Navigation
 @inject HttpClient Http
+@inject IUserService _UserService
+@inject IMessageService _MessageService
+@inject AppDbContext _Context
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
@@ -11,6 +15,7 @@
 <PageTitle>Index</PageTitle>
 <html>
 <body>
+    <p>@ReciverIdForm</p>
 @if (_hubConnection == null)
 {
  
@@ -20,11 +25,36 @@ else
 {
    
     <input type="text" name="Message" @bind="Message" />
-    <button onclick="@ToAll">powiadom</button>
+        <button @onclick="() => CreateMessage(Message,ReciverIdForm)">napisz</button>
 }
-<ul>
-   
-</ul>
+
+       
+<div class="messageConatiner">
+        @code
+        {
+            private string userId;
+
+            protected override async Task OnInitializedAsync()
+            {
+                userId = await GetLoggedUser();
+            }
+        }
+        @foreach (var message in GetMessages(userId, ReciverIdForm))
+        {
+            @if(message.Creatorid == userId)
+            {
+                <div class="creatorMessages">
+                    <p>@message.Content</p>
+                </div>
+            }
+            else
+            {
+                <div class="reciverMessages">
+                    <p>@message.Content</p>
+                </div>
+            }
+        }  
+</div>
 </body>
 
 </html>
@@ -34,38 +64,47 @@ else
     public string Message { get; set; } = "";
     public string _RenderMessage { get; set; } = "";
     private readonly UserManager<UserModel> _userManager;
-    private readonly IUserService _userService;
-   
-
+    [Parameter] public string ReciverIdForm { get; set; }
     private HubConnection? _hubConnection;
+
     private async Task Connect()
     {
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
             .Build();
-        
-       
+
+        UserModel _User = await _UserService.GetLoggedUser();
         _hubConnection.On<string>("ReceiveNotification", (message) =>
         {
-           
+
             Console.WriteLine(message);
-           
+
         });
-        UserModel _User = await _userService.GetLoggedUser();
+
         await _hubConnection.StartAsync();
     }
-    public void RenderMessage(string message)
-    {
-        _RenderMessage = message;
-        Console.WriteLine("dziala");
-        StateHasChanged();
-    }
+
     private async Task ToAll()
     {
         await _hubConnection.InvokeAsync("ToAll", Message);
-       
-    }
 
+    }
+    public void CreateMessage(string MessageContent, string ReciverId)
+    {
+        _MessageService.AddMessage(MessageContent, ReciverId);
+    }
+    public List<Message> GetMessages(string CreatorId, string ReciverId)
+    {
+        var Messages = _Context.Messages.Where(x => x.Creatorid == CreatorId && x.Reciverid == ReciverId).ToList();
+        
+
+        return Messages;
+    }
+    public async Task<string> GetLoggedUser()
+    {
+        UserModel _User = await _UserService.GetLoggedUser();
+        return _User.Id;
+    }
     public async ValueTask DisposeAsync()
     {
         if(_hubConnection != null){
