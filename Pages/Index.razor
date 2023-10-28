@@ -4,7 +4,6 @@
 @inject HttpClient Http
 @inject IUserService _UserService
 @inject IMessageService _MessageService
-@inject AppDbContext _Context
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
@@ -33,28 +32,33 @@ else
         @code
         {
             private string userId;
-
+            private List<Message> MessageList;
             protected override async Task OnInitializedAsync()
             {
                 userId = await GetLoggedUser();
+                MessageList = await _MessageService.GetMessages(userId, ReciverIdForm);
             }
         }
-        @foreach (var message in GetMessages(userId, ReciverIdForm))
+        @if (MessageList != null)
         {
-            @if(message.Creatorid == userId)
+            @foreach (var message in MessageList)
             {
-                <div class="creatorMessages">
-                    <p>@message.Content</p>
-                </div>
+                @if (message.Creatorid == userId)
+                {
+                    <div class="creatorMessages">
+                        <p>@message.Content</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="reciverMessages">
+                        <p>@message.Content</p>
+                    </div>
+                }
             }
-            else
-            {
-                <div class="reciverMessages">
-                    <p>@message.Content</p>
-                </div>
-            }
-        }  
-</div>
+
+        }
+    </div>
 </body>
 
 </html>
@@ -89,17 +93,14 @@ else
         await _hubConnection.InvokeAsync("ToAll", Message);
 
     }
-    public void CreateMessage(string MessageContent, string ReciverId)
+    public async void CreateMessage(string MessageContent, string ReciverId)
     {
-        _MessageService.AddMessage(MessageContent, ReciverId);
+        var userId = await GetLoggedUser();
+        _MessageService.AddMessage(MessageContent, ReciverId, userId);
+        Message = "";
+        Console.WriteLine("DZIALA ELEGNACKO");
     }
-    public List<Message> GetMessages(string CreatorId, string ReciverId)
-    {
-        var Messages = _Context.Messages.Where(x => x.Creatorid == CreatorId && x.Reciverid == ReciverId).ToList();
-        
-
-        return Messages;
-    }
+    
     public async Task<string> GetLoggedUser()
     {
         UserModel _User = await _UserService.GetLoggedUser();
@@ -108,7 +109,7 @@ else
     public async ValueTask DisposeAsync()
     {
         if(_hubConnection != null){
-    await _hubConnection.DisposeAsync();
+        await _hubConnection.DisposeAsync();
         }
     }
 }

@@ -6,13 +6,12 @@ namespace messager.Services
 {
     public class UserService : IUserService
     {
-        private readonly AppDbContext _context;
+     
         private readonly UserManager<UserModel> _userManager;
         private readonly SignInManager<UserModel> _signInManager;
 		private readonly IHttpContextAccessor _httpContextAccessor;
-		public UserService(AppDbContext context, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor)
+		public UserService(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
             _userManager = userManager;
             _signInManager = signInManager; 
             _httpContextAccessor = httpContextAccessor;

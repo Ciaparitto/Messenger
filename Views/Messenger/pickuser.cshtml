@@ -2,9 +2,9 @@
 @foreach (var user in Model)
 {
 	<form method="post">
-	
-		<p name="ReciverId">@user.UserName</p>
-		<a href="/chat/@user.UserName">Napisz</a>
+		<input type="hidden" name="ReciverId" value="@user.Id" />
+		<p>@user.UserName</p>
+		<a href="/chat/@user.Id">Napiszasdsadsadsdaasd</a>
 	
 	</form>
 }
