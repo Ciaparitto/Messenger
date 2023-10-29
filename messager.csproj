@@ -33,7 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\JavaScript\" />
     <Folder Include="Nowy folder\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\JavaScript\AddMessageToView.js" />
   </ItemGroup>
 
 </Project>

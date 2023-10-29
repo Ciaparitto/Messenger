@@ -2,6 +2,7 @@
 @page "/chat/{ReciverIdForm}"
 @inject NavigationManager Navigation
 @inject HttpClient Http
+@inject IJSRuntime JSRuntime
 @inject IUserService _UserService
 @inject IMessageService _MessageService
 @using Microsoft.AspNetCore.Identity;
@@ -24,11 +25,11 @@ else
 {
    
     <input type="text" name="Message" @bind="Message" />
-        <button @onclick="() => CreateMessage(Message,ReciverIdForm)">napisz</button>
+        <button @onclick="() => ToAll(Message,ReciverIdForm)">napisz</button>
 }
 
        
-<div class="messageConatiner">
+<div id="NWNM"class="messageConatiner">
         @code
         {
             private string userId;
@@ -49,7 +50,7 @@ else
                         <p>@message.Content</p>
                     </div>
                 }
-                else
+                @if (message.Creatorid == ReciverIdForm)
                 {
                     <div class="reciverMessages">
                         <p>@message.Content</p>
@@ -78,28 +79,29 @@ else
             .Build();
 
         UserModel _User = await _UserService.GetLoggedUser();
-        _hubConnection.On<string>("ReceiveNotification", (message) =>
+        _hubConnection.On<string>("ReciveNotification", (message) =>
         {
 
-            Console.WriteLine(message);
-
+            AddMessageToView(message);
+            Console.WriteLine("PRZYHJELO PETLE");
         });
 
         await _hubConnection.StartAsync();
     }
-
-    private async Task ToAll()
+    private async Task AddMessageToView(string MessageContent)
     {
-        await _hubConnection.InvokeAsync("ToAll", Message);
-
+        await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent);
     }
-    public async void CreateMessage(string MessageContent, string ReciverId)
+    private async Task ToAll(string MessageContent, string ReciverId)
     {
         var userId = await GetLoggedUser();
         _MessageService.AddMessage(MessageContent, ReciverId, userId);
+        
         Message = "";
-        Console.WriteLine("DZIALA ELEGNACKO");
+        await _hubConnection.InvokeAsync("ToAll", MessageContent);
+
     }
+   
     
     public async Task<string> GetLoggedUser()
     {
