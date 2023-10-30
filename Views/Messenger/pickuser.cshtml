@@ -1,10 +1,12 @@
 ﻿@model IEnumerable<messager.models.UserModel>
 @foreach (var user in Model)
 {
-	<form method="post">
-		<input type="hidden" name="ReciverId" value="@user.Id" />
-		<p>@user.UserName</p>
-		<a href="/chat/@user.Id">Napiszasdsadsadsdaasd</a>
-	
-	</form>
+	if (user.Id != ViewBag.UserId)
+	{
+		<form method="post">
+			<input type="hidden" name="ReciverId" value="@user.Id" />
+			<p>@user.UserName</p>
+			<a href="/chat/@user.Id">Napisz</a>
+		</form>
+	}
 }

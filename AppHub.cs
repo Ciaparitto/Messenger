@@ -7,16 +7,25 @@ namespace messager
 {
     public class AppHub : Hub
     {
-        public async Task ToAll(string message)
+        public async Task SendMessage(string message,string UserId)
         {
-            //await Clients.All.ToAll(message);
-            await Clients.All.SendAsync("ReciveNotification", message);
+            
+            //await Clients.All.SendAsync("ReciveNotification", message);
+            await Clients.Groups(UserId).SendAsync("ReciveNotification", message);
             Console.WriteLine(message);
            
         }
-        public async Task JoinGroup(string name)
+        public async Task SendMessage2(string message, string UserId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, name);
+
+            await Clients.All.SendAsync("ReciveNotification", message);
+            //await Clients.Groups(UserId).SendAsync("ReciveNotification", message);
+            Console.WriteLine(message);
+
+        }
+        public async Task JoinGroup(string UserId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, UserId);
         }
     }
 }

@@ -13,48 +13,48 @@
 @using messager.models;
 @implements IAsyncDisposable
 <PageTitle>Index</PageTitle>
+<style>
+    #creatorMessages{
+        background-color: rgb(255,85,51);
+        padding:10px;
+        margin: 10px;
+    }
+
+    #reciverMessages{
+        background-color: rgb(51,187,255);
+        padding: 10px;
+        margin:10px;
+    }
+</style>
 <html>
 <body>
     <p>@ReciverIdForm</p>
 @if (_hubConnection == null)
 {
  
-    <button onclick="@Connect">Polacz</button>
+    <button>Polacz</button>
 }
 else
 {
    
     <input type="text" name="Message" @bind="Message" />
-        <button @onclick="() => ToAll(Message,ReciverIdForm)">napisz</button>
+        <button @onclick="() => SendMessage(Message,ReciverIdForm)">napisz</button>
 }
 
        
-<div id="NWNM"class="messageConatiner">
-        @code
-        {
-            private string userId;
-            private List<Message> MessageList;
-            protected override async Task OnInitializedAsync()
-            {
-                userId = await GetLoggedUser();
-                MessageList = await _MessageService.GetMessages(userId, ReciverIdForm);
-            }
-        }
+<div id="messageConatiner">
+         
         @if (MessageList != null)
         {
             @foreach (var message in MessageList)
             {
                 @if (message.Creatorid == userId)
                 {
-                    <div class="creatorMessages">
-                        <p>@message.Content</p>
-                    </div>
+                    AddMessageToView(message.Content, "creatorMessages");
                 }
-                @if (message.Creatorid == ReciverIdForm)
+                else
                 {
-                    <div class="reciverMessages">
-                        <p>@message.Content</p>
-                    </div>
+                    AddMessageToView(message.Content, "reciverMessages");
                 }
             }
 
@@ -71,9 +71,13 @@ else
     private readonly UserManager<UserModel> _userManager;
     [Parameter] public string ReciverIdForm { get; set; }
     private HubConnection? _hubConnection;
-
-    private async Task Connect()
+    private string userId;
+    private List<Message> MessageList;
+    protected override async Task OnInitializedAsync()
     {
+        userId = await GetLoggedUser();
+        MessageList = await _MessageService.GetMessages(userId, ReciverIdForm);
+
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
             .Build();
@@ -82,26 +86,26 @@ else
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
 
-            AddMessageToView(message);
-            Console.WriteLine("PRZYHJELO PETLE");
+            AddMessageToView(message, "reciverMessages");
+
         });
 
-        await _hubConnection.StartAsync();
+        await _hubConnection.StartAsync();//tutaj dodaje 3
+        await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
     }
-    private async Task AddMessageToView(string MessageContent)
+    private async Task AddMessageToView(string MessageContent,string ElementId)
     {
-        await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent);
+        await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, ElementId);
     }
-    private async Task ToAll(string MessageContent, string ReciverId)
+    private async Task SendMessage(string MessageContent, string ReciverId)
     {
         var userId = await GetLoggedUser();
         _MessageService.AddMessage(MessageContent, ReciverId, userId);
-        
         Message = "";
-        await _hubConnection.InvokeAsync("ToAll", MessageContent);
+        await _hubConnection.InvokeAsync("SendMessage", MessageContent, ReciverIdForm);
+        AddMessageToView(MessageContent, "messageConatiner");
 
     }
-   
     
     public async Task<string> GetLoggedUser()
     {
@@ -110,7 +114,8 @@ else
     }
     public async ValueTask DisposeAsync()
     {
-        if(_hubConnection != null){
+        if(_hubConnection != null)
+        {
         await _hubConnection.DisposeAsync();
         }
     }

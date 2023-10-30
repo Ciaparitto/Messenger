@@ -20,8 +20,7 @@ namespace messager.Services
 
         public void AddMessage(string messagecontent,string reciverid,string CreatorId)
         {
-           
-               
+     
                 var Message = new Message
                 {
                     Content = messagecontent,
@@ -34,10 +33,15 @@ namespace messager.Services
         }
         public async Task<List<Message>> GetMessages(string CreatorId, string ReciverId)
         {
+
+            var Messages = await _Context.Messages
+            .Where(x => (x.Creatorid == CreatorId && x.Reciverid == ReciverId) || (x.Creatorid == ReciverId && x.Reciverid == CreatorId))
+            .ToListAsync();
+
+
             
-                var Messages = await _Context.Messages.Where(x => x.Creatorid == CreatorId && x.Reciverid == ReciverId).ToListAsync();
-                return Messages;
-                   
+            return Messages;
+
         }
     }
 }
