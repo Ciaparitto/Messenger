@@ -8,6 +8,7 @@
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
+@using System.Text;
 @using messager.Services.Interfaces;
 @using messager.Services;
 @using messager.models;
@@ -18,28 +19,28 @@
         background-color: rgb(255,85,51);
         padding:10px;
         margin: 10px;
+        text-align:right;
     }
 
     #reciverMessages{
         background-color: rgb(51,187,255);
         padding: 10px;
         margin:10px;
+        text-align: left;
+
+    }
+
+    #messageConatiner {
+        width: 100%; 
+        height: 700px; 
+        overflow: auto; 
+        border: 1px solid #ccc; 
     }
 </style>
 <html>
 <body>
-    <p>@ReciverIdForm</p>
-@if (_hubConnection == null)
-{
- 
-    <button>Polacz</button>
-}
-else
-{
-   
-    <input type="text" name="Message" @bind="Message" />
-        <button @onclick="() => SendMessage(Message,ReciverIdForm)">napisz</button>
-}
+<p>@ReciverIdForm</p>
+
 
        
 <div id="messageConatiner">
@@ -48,22 +49,33 @@ else
         {
             @foreach (var message in MessageList)
             {
+
                 @if (message.Creatorid == userId)
                 {
-                    AddMessageToView(message.Content, "creatorMessages");
+                    AddMessageToView(AddBreakLines(message.Content), "creatorMessages");//napraw wyswietlanie
+                    
                 }
                 else
                 {
-                    AddMessageToView(message.Content, "reciverMessages");
+                    AddMessageToView(AddBreakLines(message.Content), "reciverMessages");
                 }
+                MessageListToRemove.Add(message);
             }
 
         }
+        @if (MessageListToRemove != null)
+        {
+            @foreach (var message in MessageListToRemove)
+            {
+                MessageList.Remove(message);
+            }
+        }
     </div>
+    <input type="text" name="Message" @bind="Message" />
+    <button @onclick="() => SendMessage(Message,ReciverIdForm)">napisz</button>
 </body>
 
 </html>
-
 
 @code {
     public string Message { get; set; } = "";
@@ -73,6 +85,8 @@ else
     private HubConnection? _hubConnection;
     private string userId;
     private List<Message> MessageList;
+    private List<Message> MessageListToRemove = new List<Message>();
+
     protected override async Task OnInitializedAsync()
     {
         userId = await GetLoggedUser();
@@ -87,12 +101,15 @@ else
         {
 
             AddMessageToView(message, "reciverMessages");
+            JSRuntime.InvokeVoidAsync("scrollToBottom");
 
         });
 
-        await _hubConnection.StartAsync();//tutaj dodaje 3
+        await _hubConnection.StartAsync();
         await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
+        JSRuntime.InvokeVoidAsync("scrollToBottom");
     }
+
     private async Task AddMessageToView(string MessageContent,string ElementId)
     {
         await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, ElementId);
@@ -103,10 +120,30 @@ else
         _MessageService.AddMessage(MessageContent, ReciverId, userId);
         Message = "";
         await _hubConnection.InvokeAsync("SendMessage", MessageContent, ReciverIdForm);
-        AddMessageToView(MessageContent, "messageConatiner");
+        AddMessageToView(MessageContent, "creatorMessages");
+        await JSRuntime.InvokeVoidAsync("scrollToBottom");
+
 
     }
-    
+    public string AddBreakLines(string Message)
+    {
+        var MessageWithBreakLines = "";
+        StringBuilder outputText = new StringBuilder();
+        int licznik = 0;
+
+        foreach (char c in Message)
+        {
+            if (licznik >= 3)
+            {
+                outputText.Append("</br>");
+                licznik = 0;
+            }
+            outputText.Append(c);
+            licznik++;
+        }
+        MessageWithBreakLines = outputText.ToString();
+        return MessageWithBreakLines;
+    }
     public async Task<string> GetLoggedUser()
     {
         UserModel _User = await _UserService.GetLoggedUser();

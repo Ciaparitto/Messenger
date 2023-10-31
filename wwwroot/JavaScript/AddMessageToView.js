@@ -6,3 +6,7 @@ function AddMessageToView(message,ElementId)
     Message.id = ElementId;
     MessageArea.appendChild(Message);
 }
+function scrollToBottom() {
+    var div = document.getElementById("messageConatiner");
+    div.scrollTop = div.scrollHeight;
+}
