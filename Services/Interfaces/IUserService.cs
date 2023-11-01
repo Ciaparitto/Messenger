@@ -8,8 +8,10 @@ namespace messager.Services.Interfaces
         public  void Login(string username, string password);
         public  void Logout();
         public Task<UserModel> GetLoggedUser();
+        public Task<UserModel> GetUserById(string id);
 
 
 
-	}
+
+    }
 }

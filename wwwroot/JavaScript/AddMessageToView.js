@@ -1,10 +1,11 @@
-function AddMessageToView(message,ElementId)
+function AddMessageToView(message, ElementClassName)
 {
-    var Message = document.createElement("p");
+    var Message = document.createElement("li");
     var MessageArea = document.getElementById("messageConatiner");
-    Message.textContent = message;
-    Message.id = ElementId;
+    Message.innerHTML = message;
+    Message.className = ElementClassName;
     MessageArea.appendChild(Message);
+    scrollToBottom();
 }
 function scrollToBottom() {
     var div = document.getElementById("messageConatiner");

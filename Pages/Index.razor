@@ -1,5 +1,4 @@
-﻿@page "/chat"
-@page "/chat/{ReciverIdForm}"
+﻿@page "/chat/{ReciverIdForm}"
 @inject NavigationManager Navigation
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
@@ -15,32 +14,56 @@
 @implements IAsyncDisposable
 <PageTitle>Index</PageTitle>
 <style>
-    #creatorMessages{
-        background-color: rgb(255,85,51);
+    .creatorMessages{       
+        background-color: rgb(51,187,255);
         padding:10px;
         margin: 10px;
-        text-align:right;
+        align-self: flex-end;
+        display: table;
+        border-radius:15px;
+
     }
 
-    #reciverMessages{
-        background-color: rgb(51,187,255);
+    .reciverMessages{
+        background-color: rgb(255,85,51);
         padding: 10px;
         margin:10px;
-        text-align: left;
-
+        align-self: flex-start;
+        display: table;
+        border-radius: 15px;
     }
+
+    
 
     #messageConatiner {
         width: 100%; 
         height: 700px; 
         overflow: auto; 
         border: 1px solid #ccc; 
+        display: flex;
+        flex-direction: column;
+    }
+    input
+    {
+        width:90%;
+        padding:0px;
+        margin:0px;
+        border-radius: 15px;
+    }
+    button{
+        width:10%;
+        border-radius: 15px;
+        float:right;
+        background-color:rgb(51,187,255);
+        border:none;
     }
 </style>
 <html>
 <body>
-<p>@ReciverIdForm</p>
-
+    @if (Revicer != null)
+    {
+        <p>@Revicer.UserName</p>
+    }
 
        
 <div id="messageConatiner">
@@ -52,7 +75,7 @@
 
                 @if (message.Creatorid == userId)
                 {
-                    AddMessageToView(AddBreakLines(message.Content), "creatorMessages");//napraw wyswietlanie
+                    AddMessageToView(AddBreakLines(message.Content), "creatorMessages");
                     
                 }
                 else
@@ -72,7 +95,7 @@
         }
     </div>
     <input type="text" name="Message" @bind="Message" />
-    <button @onclick="() => SendMessage(Message,ReciverIdForm)">napisz</button>
+    <button @onclick="() => SendMessage(Message,Revicer.Id)">napisz</button>
 </body>
 
 </html>
@@ -84,13 +107,15 @@
     [Parameter] public string ReciverIdForm { get; set; }
     private HubConnection? _hubConnection;
     private string userId;
+    private UserModel Revicer;
     private List<Message> MessageList;
     private List<Message> MessageListToRemove = new List<Message>();
 
     protected override async Task OnInitializedAsync()
     {
+        Revicer = await _UserService.GetUserById(ReciverIdForm);
         userId = await GetLoggedUser();
-        MessageList = await _MessageService.GetMessages(userId, ReciverIdForm);
+        MessageList = await _MessageService.GetMessages(userId, Revicer.Id);
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
@@ -100,14 +125,17 @@
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
 
-            AddMessageToView(message, "reciverMessages");
+            AddMessageToView(AddBreakLines(message), "reciverMessages");
             JSRuntime.InvokeVoidAsync("scrollToBottom");
 
         });
 
         await _hubConnection.StartAsync();
         await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
-        JSRuntime.InvokeVoidAsync("scrollToBottom");
+        if(MessageList.Count == 0)
+        {
+            await JSRuntime.InvokeVoidAsync("scrollToBottom");
+        }
     }
 
     private async Task AddMessageToView(string MessageContent,string ElementId)
@@ -116,12 +144,15 @@
     }
     private async Task SendMessage(string MessageContent, string ReciverId)
     {
-        var userId = await GetLoggedUser();
-        _MessageService.AddMessage(MessageContent, ReciverId, userId);
-        Message = "";
-        await _hubConnection.InvokeAsync("SendMessage", MessageContent, ReciverIdForm);
-        AddMessageToView(MessageContent, "creatorMessages");
-        await JSRuntime.InvokeVoidAsync("scrollToBottom");
+        if (!string.IsNullOrWhiteSpace(MessageContent))
+        {
+            var userId = await GetLoggedUser();
+            _MessageService.AddMessage(MessageContent, ReciverId, userId);
+            Message = "";
+            await _hubConnection.InvokeAsync("SendMessage", MessageContent, Revicer.Id);
+            AddMessageToView(AddBreakLines(MessageContent), "creatorMessages");
+            await JSRuntime.InvokeVoidAsync("scrollToBottom");
+        }
 
 
     }
@@ -133,7 +164,7 @@
 
         foreach (char c in Message)
         {
-            if (licznik >= 3)
+            if (licznik >= 85)
             {
                 outputText.Append("</br>");
                 licznik = 0;

@@ -4,7 +4,8 @@
 	if (user.Id != ViewBag.UserId)
 	{
 		<form method="post">
-			<input type="hidden" name="ReciverId" value="@user.Id" />
+			<input type="hidden" name="ReciverId" value="@user" />
+			
 			<p>@user.UserName</p>
 			<a href="/chat/@user.Id">Napisz</a>
 		</form>

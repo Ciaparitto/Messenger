@@ -39,5 +39,11 @@ namespace messager.Services
 			var _User = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 			return _User;
         }
+        public async Task<UserModel> GetUserById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            return user;
+        }
+
     }
 }
