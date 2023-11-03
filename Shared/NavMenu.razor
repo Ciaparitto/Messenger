@@ -21,6 +21,11 @@
 @if(_User != null)
 {
     <p>twoi znajomi:</p>
+    @foreach(var user in UserList)
+    {
+        <button @onclick="@(() => RedirectToCshtml($"chat/{user.Id}"))">@user.UserName</button>
+    }
+
 }
 else
 {
@@ -34,18 +39,25 @@ else
 
 @code {
     private bool collapseNavMenu = true;
+    private List<UserModel> UserList;
     private UserModel _User;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     protected override async Task OnInitializedAsync()
     {
         _User = await _UserService.GetLoggedUser();
+        if (_User != null)
+        {
+            UserList = await _UserService.GetUsers(_User.Id);
+        }
     }
     private void RedirectToCshtml(string url)
     {
         NavigationManager.NavigateTo(url, forceLoad: true);
     }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
+    
 }
