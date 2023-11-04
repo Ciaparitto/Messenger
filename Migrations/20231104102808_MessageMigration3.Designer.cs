@@ -12,8 +12,8 @@ using messager;
 namespace messager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231103164923_MessageMigration1")]
-    partial class MessageMigration1
+    [Migration("20231104102808_MessageMigration3")]
+    partial class MessageMigration3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,19 +36,19 @@ namespace messager.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Creatorid")
+                    b.Property<string>("CreatorId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Reciverid")
+                    b.Property<string>("ReciverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Creatorid");
+                    b.HasIndex("CreatorId");
 
-                    b.HasIndex("Reciverid");
+                    b.HasIndex("ReciverId");
 
                     b.ToTable("Messages");
                 });
@@ -255,13 +255,13 @@ namespace messager.Migrations
                 {
                     b.HasOne("messager.models.UserModel", "Creator")
                         .WithMany()
-                        .HasForeignKey("Creatorid")
+                        .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("messager.models.UserModel", "Reciver")
                         .WithMany()
-                        .HasForeignKey("Reciverid")
+                        .HasForeignKey("ReciverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

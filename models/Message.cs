@@ -14,17 +14,14 @@ namespace messager.models
         [Required]
         public string Content { get; set; }
 
-        [ForeignKey("Creatorid")]
-        public UserModel Creator { get; set; }
+        [Required]
+        public string CreatorId { get; set; }
 
         [Required]
-        public string Creatorid { get; set; }
+        public string ReciverId { get; set; }
 
-        [ForeignKey("Reciverid")]
+        [ForeignKey("ReciverId")]
         public UserModel Reciver { get; set; }
-
-        [Required]
-        public string Reciverid { get; set; }
     }
 
     

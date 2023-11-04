@@ -24,8 +24,8 @@ namespace messager.Services
                 var Message = new Message
                 {
                     Content = messagecontent,
-                    Creatorid = CreatorId,
-                    Reciverid = reciverid
+                    CreatorId = CreatorId,
+                    ReciverId = reciverid
                 };
                 _Context.Messages.Add(Message);
                 _Context.SaveChangesAsync();
@@ -35,7 +35,7 @@ namespace messager.Services
         {
 
             var Messages = await _Context.Messages
-            .Where(x => (x.Creatorid == CreatorId && x.Reciverid == ReciverId) || (x.Creatorid == ReciverId && x.Reciverid == CreatorId))
+            .Where(x => (x.CreatorId == CreatorId && x.ReciverId == ReciverId) || (x.CreatorId == ReciverId && x.ReciverId == CreatorId))
             .ToListAsync();
 
 

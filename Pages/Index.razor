@@ -73,7 +73,7 @@
             @foreach (var message in MessageList)
             {
 
-                @if (message.Creatorid == userId)
+                @if (message.CreatorId == userId)
                 {
                     AddMessageToView(AddBreakLines(message.Content), "creatorMessages");
                     
