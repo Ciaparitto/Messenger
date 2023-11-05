@@ -11,8 +11,11 @@ namespace messager
         {
 
         }
-      
-        public DbSet<Message> Messages { get; set; }
+
+
        
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<MessageModel> MessageList { get; set; }
+
     }
 }

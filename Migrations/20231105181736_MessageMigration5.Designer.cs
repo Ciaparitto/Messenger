@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using messager;
 
@@ -11,9 +12,10 @@ using messager;
 namespace messager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231105181736_MessageMigration5")]
+    partial class MessageMigration5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,33 +49,6 @@ namespace messager.Migrations
                     b.HasIndex("ReciverId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("messager.models.MessageModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReciverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReciverId");
-
-                    b.ToTable("MessageList");
                 });
 
             modelBuilder.Entity("messager.models.UserModel", b =>
@@ -275,17 +250,6 @@ namespace messager.Migrations
                 });
 
             modelBuilder.Entity("messager.models.Message", b =>
-                {
-                    b.HasOne("messager.models.UserModel", "Reciver")
-                        .WithMany()
-                        .HasForeignKey("ReciverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reciver");
-                });
-
-            modelBuilder.Entity("messager.models.MessageModel", b =>
                 {
                     b.HasOne("messager.models.UserModel", "Reciver")
                         .WithMany()

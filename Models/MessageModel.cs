@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace messager.models
 {
-    public class Message
+    public class MessageModel
     {
 
-        
+
         [Key]
         public int Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace messager.models
         [Required]
         public string ReciverId { get; set; }
 
-        [ForeignKey("ReciverId")]
+        [ForeignKey("Id")]
         public UserModel Reciver { get; set; }
     }
 

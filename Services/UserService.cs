@@ -51,8 +51,10 @@ namespace messager.Services
         }
         public async Task<List<UserModel>> GetUsers(string CreatorId)
         {
-            var MessageList =  _Context.Messages.Where(x => x.CreatorId == CreatorId).ToList();
+            var MessageList =  _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToList();
+            var User = GetLoggedUser();
             List<UserModel> UserList = new List<UserModel>();
+            List<UserModel> UserList2 = new List<UserModel>();
             foreach (var message in MessageList)
             {
                 if (UserList.Count == 0)
@@ -61,11 +63,14 @@ namespace messager.Services
                 }
                 else
                 {
-                    foreach (var user in UserList)
+                    if (UserList.Count != 0 && User != null)
                     {
-                        if (message.ReciverId != user.Id)
+                        foreach (var user in UserList)
                         {
-                            UserList.Add(message.Reciver);
+                            if (message.ReciverId != user.Id)
+                            {
+                                UserList2.Add(message.Reciver);
+                            }
                         }
                     }
                 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using messager;
 
@@ -11,9 +12,10 @@ using messager;
 namespace messager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231105181850_MessageMigration6")]
+    partial class MessageMigration6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +51,7 @@ namespace messager.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("messager.models.MessageModel", b =>
+            modelBuilder.Entity("messager.models.Message2", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -73,7 +75,7 @@ namespace messager.Migrations
 
                     b.HasIndex("ReciverId");
 
-                    b.ToTable("MessageList");
+                    b.ToTable("Messages2");
                 });
 
             modelBuilder.Entity("messager.models.UserModel", b =>
@@ -285,7 +287,7 @@ namespace messager.Migrations
                     b.Navigation("Reciver");
                 });
 
-            modelBuilder.Entity("messager.models.MessageModel", b =>
+            modelBuilder.Entity("messager.models.Message2", b =>
                 {
                     b.HasOne("messager.models.UserModel", "Reciver")
                         .WithMany()

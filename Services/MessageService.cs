@@ -21,20 +21,20 @@ namespace messager.Services
         public void AddMessage(string messagecontent,string reciverid,string CreatorId)
         {
      
-                var Message = new Message
+                var Message = new MessageModel
                 {
                     Content = messagecontent,
                     CreatorId = CreatorId,
                     ReciverId = reciverid
                 };
-                _Context.Messages.Add(Message);
+                _Context.MessageList.Add(Message);
                 _Context.SaveChangesAsync();
             
         }
-        public async Task<List<Message>> GetMessages(string CreatorId, string ReciverId)
+        public async Task<List<MessageModel>> GetMessages(string CreatorId, string ReciverId)
         {
 
-            var Messages = await _Context.Messages
+            var Messages = await _Context.MessageList
             .Where(x => (x.CreatorId == CreatorId && x.ReciverId == ReciverId) || (x.CreatorId == ReciverId && x.ReciverId == CreatorId))
             .ToListAsync();
 
