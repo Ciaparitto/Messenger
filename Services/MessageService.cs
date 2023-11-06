@@ -33,7 +33,7 @@ namespace messager.Services
         }
         public async Task<List<MessageModel>> GetMessages(string CreatorId, string ReciverId)
         {
-
+            
             var Messages = await _Context.MessageList
             .Where(x => (x.CreatorId == CreatorId && x.ReciverId == ReciverId) || (x.CreatorId == ReciverId && x.ReciverId == CreatorId))
             .ToListAsync();
@@ -41,7 +41,7 @@ namespace messager.Services
 
             
             return Messages;
-
+            
         }
     }
 }

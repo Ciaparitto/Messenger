@@ -20,7 +20,7 @@ namespace messager.models
         [Required]
         public string ReciverId { get; set; }
 
-        [ForeignKey("Id")]
+        [ForeignKey("ReciverId")]
         public UserModel Reciver { get; set; }
     }
 

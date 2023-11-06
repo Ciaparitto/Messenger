@@ -3,6 +3,7 @@
 @inject IUserService _UserService; 
 @inject NavigationManager NavigationManager
 <style>
+  
     .button-container {
         display: flex;
         justify-content: center;
@@ -10,29 +11,38 @@
         flex-direction: column;
         margin-top:50px; 
         padding:5px;
+        color: white;
     }
-    button{
-    margin:20px;
-        background-color: rgba(120, 0, 180, 0.6);
+
+    .ButtonLayOut {
+        background-color: rgb(51,187,255);
+        padding: 10px;
+        margin: 10px;
+        align-self:center;
+        display: table;
+        border-radius: 15px;
         border:none;
-        border-radius:10px;
+        
+        
     }
+   
 </style>
 @if(_User != null)
 {
+    <div class="button-container">
     <p>twoi znajomi:</p>
     @foreach(var user in UserList)
     {
-        <button @onclick="@(() => RedirectToCshtml($"chat/{user.Id}"))">@user.UserName</button>
+            <button class="ButtonLayOut" @onclick="@(() => RedirectToCshtml($"chat/{user.Id}"))">@user.UserName</button>
     }
-
+    </div>
 }
 else
 {
   
     <div class="button-container">
-        <button @onclick="@(() => RedirectToCshtml("account/login"))">Zaloguj się</button>
-        <button @onclick="@(() => RedirectToCshtml("account/register"))">Zarejestruj się</button>
+        <button class="ButtonLayOut" @onclick="@(() => RedirectToCshtml("account/login"))">Zaloguj się</button>
+        <button class="ButtonLayOut" @onclick="@(() => RedirectToCshtml("account/register"))">Zarejestruj się</button>
     </div>
 }
 

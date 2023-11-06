@@ -2,6 +2,7 @@
 using messager.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Documents;
+using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
 namespace messager.Services
@@ -51,31 +52,42 @@ namespace messager.Services
         }
         public async Task<List<UserModel>> GetUsers(string CreatorId)
         {
-            var MessageList =  _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToList();
-            var User = GetLoggedUser();
-            List<UserModel> UserList = new List<UserModel>();
-            List<UserModel> UserList2 = new List<UserModel>();
-            foreach (var message in MessageList)
-            {
-                if (UserList.Count == 0)
+           
+                var MessageList = _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToList();
+
+                var _User = GetLoggedUser();
+                List<UserModel> UserList = new List<UserModel>();
+                List<UserModel> UserList2 = new List<UserModel>();
+                foreach (var message in MessageList)
                 {
-                    UserList.Add(message.Reciver);
-                }
-                else
-                {
-                    if (UserList.Count != 0 && User != null)
+                    if (UserList.Count == 0)
                     {
-                        foreach (var user in UserList)
+                        var reciver = await GetUserById(message.ReciverId);
+                        UserList.Add(reciver);
+                        UserList2.Add(reciver);
+                    }
+                    else
+                    {
+                        if (UserList.Count != 0 && _User != null)
                         {
-                            if (message.ReciverId != user.Id)
+                            foreach (var user in UserList)
                             {
-                                UserList2.Add(message.Reciver);
+                                if (message.ReciverId != user.Id)
+                                {
+
+                                    var reciver = await GetUserById(message.ReciverId);
+                                    UserList2.Add(reciver);
+                                }
                             }
                         }
                     }
                 }
-            }
-            return UserList;
+
+                var EndUserList = UserList2.Distinct().ToList();
+                return EndUserList;
+            
+
+            
         }
 
     }

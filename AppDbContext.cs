@@ -7,6 +7,10 @@ namespace messager
 {
     public class AppDbContext : IdentityDbContext<UserModel>
     {
+        public AppDbContext()
+        {
+
+        }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
@@ -14,7 +18,7 @@ namespace messager
 
 
        
-        public DbSet<Message> Messages { get; set; }
+        
         public DbSet<MessageModel> MessageList { get; set; }
 
     }
