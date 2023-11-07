@@ -25,7 +25,7 @@ namespace messager.Controllers
 		{
 			var USER = _userManager.GetUserAsync(User).Result;
 			ViewBag.UserId = USER.Id;
-			var users = _Context.Users.ToList();
+			var users = _Context.Users.AsNoTracking().ToListAsync();
 			return View(users);			
 		}
 		[HttpPost]

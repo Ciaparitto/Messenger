@@ -121,7 +121,7 @@
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
             .Build();
 
-        UserModel _User = await _UserService.GetLoggedUser();
+        
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
 
@@ -131,11 +131,13 @@
         });
 
         await _hubConnection.StartAsync();
+        UserModel _User = await _UserService.GetLoggedUser();
         await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
         if(MessageList.Count == 0)
         {
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
         }
+
     }
 
     private async Task AddMessageToView(string MessageContent,string ElementId)

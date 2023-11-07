@@ -9,16 +9,18 @@ namespace messager.Services
 {
     public class UserService : IUserService
     {
-        private readonly AppDbContext _Context;
+        
         private readonly UserManager<UserModel> _userManager;
         private readonly SignInManager<UserModel> _signInManager;
 		private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMessageService _messageService;
-		public UserService(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor, AppDbContext context)
+        private readonly AppDbContext _Context;
+		public UserService(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor, IMessageService messageService,AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager; 
-            _httpContextAccessor = httpContextAccessor;
+            _httpContextAccessor = httpContextAccessor;           
+            _messageService = messageService;
             _Context = context;
             
         }
@@ -50,44 +52,22 @@ namespace messager.Services
             var user = await _userManager.FindByIdAsync(id);
             return user;
         }
+        public async Task<List<UserModel>> GetUsersByIds(IEnumerable<string> userIds)
+        {
+            var Users = _userManager.Users.ToListAsync();
+            return await _Context.Users.Where(user => userIds.Contains(user.Id)).ToListAsync();
+        }
+
         public async Task<List<UserModel>> GetUsers(string CreatorId)
         {
-           
-                var MessageList = _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToList();
-
-                var _User = GetLoggedUser();
-                List<UserModel> UserList = new List<UserModel>();
-                List<UserModel> UserList2 = new List<UserModel>();
-                foreach (var message in MessageList)
-                {
-                    if (UserList.Count == 0)
-                    {
-                        var reciver = await GetUserById(message.ReciverId);
-                        UserList.Add(reciver);
-                        UserList2.Add(reciver);
-                    }
-                    else
-                    {
-                        if (UserList.Count != 0 && _User != null)
-                        {
-                            foreach (var user in UserList)
-                            {
-                                if (message.ReciverId != user.Id)
-                                {
-
-                                    var reciver = await GetUserById(message.ReciverId);
-                                    UserList2.Add(reciver);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                var EndUserList = UserList2.Distinct().ToList();
-                return EndUserList;
+            var MessageList = await _messageService.GetMessages(CreatorId);
+            var _User = GetLoggedUser();
+            HashSet<string> UserIds = new HashSet<string>();
+            var userIds = new HashSet<string>(MessageList.Select(msg => msg.ReciverId));
+            var UserList = await GetUsersByIds(UserIds);
+          
             
-
-            
+            return UserList;      
         }
 
     }

@@ -10,6 +10,7 @@ namespace messager.Services.Interfaces
         public Task<UserModel> GetLoggedUser();
         public Task<UserModel> GetUserById(string id);
         public Task<List<UserModel>> GetUsers(string CreatorId);
+        public Task<List<UserModel>> GetUsersByIds(IEnumerable<string> userIds);
 
     }
 }
