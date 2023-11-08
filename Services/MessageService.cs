@@ -3,6 +3,7 @@ using messager.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Documents;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace messager.Services
 {
@@ -44,8 +45,10 @@ namespace messager.Services
             
         }
         public async Task<List<MessageModel>> GetMessages(string CreatorId)
-        {          
-            return await _Context.MessageList.AsNoTracking().Where(x => x.CreatorId == CreatorId).ToListAsync();
+        {
+          
+            return await _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToListAsync();
+            
         }
         }
 }
