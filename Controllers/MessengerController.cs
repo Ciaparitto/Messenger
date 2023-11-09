@@ -6,18 +6,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using messager.models;
+using messager.Services.Interfaces;
+using messager.Services;
 
 namespace messager.Controllers
 {
-
-	public class MessengerController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class MessengerController : Controller
 	{
 		private readonly UserManager<UserModel> _userManager;
 		private readonly AppDbContext _Context;
-		public MessengerController(AppDbContext context, UserManager<UserModel> userManager)
+		public readonly IUserService _UserService;
+		public MessengerController(IUserService userService,AppDbContext context, UserManager<UserModel> userManager)
 		{
 			_Context = context;
 			_userManager = userManager;
+			_UserService = userService;
 		}
 		[HttpGet]
 		[Authorize]
@@ -34,5 +39,11 @@ namespace messager.Controllers
 		{
 			return RedirectToAction("Chat", "messenger", new { reciverid = pickeduserid });
 		}
-	}
+        [HttpGet("GetUsers")]
+        public async Task<IActionResult> GetUsers(string creatorId)
+        {
+            var userList = await _UserService.GetUsers(creatorId);
+            return Ok(userList); 
+        }
+    }
 }

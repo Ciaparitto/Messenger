@@ -1,5 +1,6 @@
 ﻿@using messager.Services.Interfaces;
 @using messager.models;
+@inject HttpClient Http
 @inject IUserService _UserService; 
 @inject NavigationManager NavigationManager
 <style>
@@ -60,7 +61,7 @@ else
         _User = await _UserService.GetLoggedUser();
         if (_User != null)
         {
-            UserList = await _UserService.GetUsers(_User.Id);
+            UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={_User.Id}");
         }
     }
     private void RedirectToCshtml(string url)

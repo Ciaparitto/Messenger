@@ -26,14 +26,12 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7097/") }); 
+
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseSqlServer("DefaultConnection");
-});
-builder.Services.AddDbContext<AppDbContext>(builder =>
-{
-    builder.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbMessenger;Integrated Security=True");
-});
+    options.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbMessenger;Integrated Security=True"),
+    ServiceLifetime.Scoped); 
 builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;

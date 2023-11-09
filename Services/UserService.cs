@@ -14,14 +14,16 @@ namespace messager.Services
         private readonly SignInManager<UserModel> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMessageService _messageService;
-        private readonly AppDbContext _Context;
-        public UserService(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor, IMessageService messageService, AppDbContext context)
+        private readonly IServiceScopeFactory _scopeFactory;
+        
+        public UserService(IServiceScopeFactory scopeFactory,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor, IMessageService messageService, AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpContextAccessor = httpContextAccessor;
             _messageService = messageService;
-            _Context = context;
+            _scopeFactory = scopeFactory;
+
 
         }
         public async void Register(string username, string password, string Email)
@@ -54,28 +56,25 @@ namespace messager.Services
         }
         public async Task<List<UserModel>> GetUsersByIds(IEnumerable<string> userIds)
         {
-
             return await _userManager.Users.Where(user => userIds.Contains(user.Id)).ToListAsync();
-
         }
 
         public async Task<List<UserModel>> GetUsers(string CreatorId)
         {
-
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseSqlServer("DefaultConnection")
-                .Options;
-            using (var context = new AppDbContext(options))
+            using (var scope = _scopeFactory.CreateScope())
             {
-                var MessageList = await _messageService.GetMessages(CreatorId);
+                var Context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                
+                var messageService = scope.ServiceProvider.GetRequiredService<IMessageService>();
+
+                var MessageList = await messageService.GetMessages(CreatorId);
                 var _User = GetLoggedUser();
                 HashSet<string> UserIds = new HashSet<string>(MessageList.Select(msg => msg.ReciverId));
                 var UserList = await GetUsersByIds(UserIds);
                 return UserList;
-
-
             }
-
+            
+           
         }
     }
 }

@@ -12,11 +12,13 @@ namespace messager.Services
         private readonly AppDbContext _Context;
         private readonly UserManager<UserModel> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public MessageService(AppDbContext context, UserManager<UserModel> userManager, IHttpContextAccessor httpContextAccessor)
+        private readonly IServiceScopeFactory _scopeFactory;
+        public MessageService(IServiceScopeFactory scopeFactory, AppDbContext context, UserManager<UserModel> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _Context = context;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+            _scopeFactory = scopeFactory;
         }
 
         public void AddMessage(string messagecontent,string reciverid,string CreatorId)
@@ -46,8 +48,11 @@ namespace messager.Services
         }
         public async Task<List<MessageModel>> GetMessages(string CreatorId)
         {
-          
-            return await _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToListAsync();
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var Context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                return await _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToListAsync();
+            }
             
         }
         }
