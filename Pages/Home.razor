@@ -1,4 +1,63 @@
 ﻿@page "/"
-<h1>strona startowa</h1>
-@{
+@using Microsoft.AspNetCore.Identity;
+@using messager.Services.Interfaces;
+@using messager.models;
+@using Microsoft.EntityFrameworkCore;
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject UserManager<UserModel> _userManager
+@inject IUserService _UserService
+<link href="~/css/style.css" rel="stylesheet" />
+
+<div class="pickuser">
+<h2>znajdz znajomych</h2>
+
+<div class="input">
+    <input type="text" @bind="keyWords" />
+    <button @onclick="@(() =>  GetUsers())">szukaj</button>
+</div>
+    @if (Users != null && Users.Count != 0)
+    {
+        foreach(var user in Users)
+        {
+            if (LoggedUser != null)
+            {
+                if (user.Id != LoggedUser.Id)
+                {
+                    <p></p>
+                    <button @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                }
+            }
+            else
+            {
+                <p></p>
+                <button @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+            }
+        }
+    }
+</div>
+@code{
+    private string keyWords = "";
+    private List<UserModel> Users;
+    private UserModel LoggedUser;
+    
+    private void RedirectToPage(string url)
+    {
+        NavigationManager.NavigateTo(url, forceLoad: true);
+    }
+    public async Task GetUsers()
+    {
+        LoggedUser = await _UserService.GetLoggedUser();
+        var users = _userManager.Users.AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyWords))
+        {
+            users = users.Where(x => x.UserName.Contains(keyWords));
+        }
+        Users = await users.ToListAsync();
+      
+        StateHasChanged();
+        
+
+    }
 }

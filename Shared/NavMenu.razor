@@ -3,35 +3,11 @@
 @inject HttpClient Http
 @inject IUserService _UserService; 
 @inject NavigationManager NavigationManager
-<style>
-  
-    .button-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        margin-top:50px; 
-        padding:5px;
-        color: white;
-    }
-
-    .ButtonLayOut {
-        background-color: rgb(51,187,255);
-        padding: 10px;
-        margin: 10px;
-        align-self:center;
-        display: table;
-        border-radius: 15px;
-        border:none;
-        
-        
-    }
-   
-</style>
+<link href="~/css/style.css" rel="stylesheet" />
 @if(_User != null)
 {
     <div class="button-container">
-        <p>twoi znajomi:</p>
+        <p>ostatnie wiadomosci:</p>
         @if (UserList != null && UserList.Count != 0)
     {
     @foreach(var user in UserList)
