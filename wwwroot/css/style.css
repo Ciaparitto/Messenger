@@ -1,14 +1,12 @@
 ﻿
-.pickuser {
+.pickuser, .input {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
 
-.input {
-    margin-top: 20px;
-}
+
 .creatorMessages {
     background-color: rgb(51,187,255);
     padding: 10px;
@@ -27,15 +25,17 @@
     border-radius: 15px;
 }
 
-
+#username{
+    text-align:center;
+}
 
 #messageConatiner {
     width: 100%;
-    height: 700px;
-    overflow: auto;
-    border: 1px solid #ccc;
+    height: 850px;
+    overflow: auto;  
     display: flex;
     flex-direction: column;
+    
 }
 
 #inputChat {
@@ -43,14 +43,33 @@
     padding: 0px;
     margin: 0px;
     border-radius: 15px;
+    height: 30px;
+}
+#inputSearch, .inputlogin {
+    width: 120%;
+    padding: 5px;
+    margin: 10px;
+    border-radius: 15px;
+}
+.inputlogin {
+    width: 40%;
+    text-align:center;
+   
 }
 
 #sendbutton {
     width: 10%;
+    height: 30px;
     border-radius: 15px;
     float: right;
     background-color: rgb(51,187,255);
     border: none;
+}
+#loginconainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 .button-container {
     display: flex;
@@ -62,7 +81,7 @@
     color: white;
 }
 
-.ButtonLayOut {
+.ButtonLayOut, #ButtonSearch,#Buttonlogin {
     background-color: rgb(51,187,255);
     padding: 10px;
     margin: 10px;
@@ -70,4 +89,28 @@
     display: table;
     border-radius: 15px;
     border: none;
+   
+}
+#ButtonSearch {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+#Buttonlogin {
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+::-webkit-scrollbar {
+    width: 12px;
+    background-color: rgba(0,0,0,0);
+}
+::-webkit-scrollbar-thumb {
+    width: 12px;
+    background-color: rgb(51,187,255);
+    border-radius: 15px;
 }

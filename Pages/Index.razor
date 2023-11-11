@@ -13,15 +13,14 @@
 @using messager.models;
 @implements IAsyncDisposable
 <PageTitle>Index</PageTitle>
-<link href="~/css/style.css" rel="stylesheet" />
-<style>
-   
-</style>
+<link href="css/style.css" rel="stylesheet">
+
 <html>
 <body>
     @if (Revicer != null)
     {
-        <p>@Revicer.UserName</p>
+       
+        <h3 id="username">@Revicer.UserName</h3>
     }
 
        
@@ -80,7 +79,7 @@
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
             .Build();
 
-        
+
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
 
@@ -105,14 +104,19 @@
     }
     private async Task SendMessage(string MessageContent, string ReciverId)
     {
-        if (!string.IsNullOrWhiteSpace(MessageContent))
+
+        if (!string.IsNullOrWhiteSpace(MessageContent) && MessageContent.Length < 512)
         {
+           
+                
+          
             var userId = await GetLoggedUser();
             _MessageService.AddMessage(MessageContent, ReciverId, userId);
             Message = "";
             await _hubConnection.InvokeAsync("SendMessage", MessageContent, Revicer.Id);
             AddMessageToView(AddBreakLines(MessageContent), "creatorMessages");
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
+            
         }
 
 

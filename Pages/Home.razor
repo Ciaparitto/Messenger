@@ -7,14 +7,14 @@
 @inject NavigationManager NavigationManager
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
-<link href="~/css/style.css" rel="stylesheet" />
+<link href="css/style.css" rel="stylesheet">
 
 <div class="pickuser">
 <h2>znajdz znajomych</h2>
 
 <div class="input">
-    <input type="text" @bind="keyWords" />
-    <button @onclick="@(() =>  GetUsers())">szukaj</button>
+    <input id="inputSearch" type="text" @bind="keyWords" />
+        <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">szukaj</button>
 </div>
     @if (Users != null && Users.Count != 0)
     {
@@ -25,13 +25,13 @@
                 if (user.Id != LoggedUser.Id)
                 {
                     <p></p>
-                    <button @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                    <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
                 }
             }
             else
             {
                 <p></p>
-                <button @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
             }
         }
     }

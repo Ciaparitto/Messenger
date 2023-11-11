@@ -1,9 +1,15 @@
-﻿
+﻿<head>
+	<link href="~/css/style.css" rel="stylesheet"/>
+</head>
 @model messager.models.Login
 @using(Html.BeginForm("Login","Account", FormMethod.Post))
 {
+	<div id="loginconainer">
 	@Html.ValidationSummary()
-	<p>Podaj nazwe uzytkownika: @Html.TextBoxFor(x=> x.UserName);</p>
-	<p>Podaj Haslo uzytkownika: @Html.PasswordFor(x=> x.Password);</p>
-	<button type="submit">zaloguj</button>
+		<p>Podaj nazwe uzytkownika: @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
+		<p>Podaj Haslo uzytkownika: @Html.PasswordFor(x=> x.Password, new {@class = "inputlogin"})</p>
+		<button id="Buttonlogin" type="submit">zaloguj</button>
+	</div>
+	
+	
 }

@@ -1,9 +1,11 @@
-﻿@using messager.Services.Interfaces;
+﻿
+@using messager.Services.Interfaces;
 @using messager.models;
 @inject HttpClient Http
 @inject IUserService _UserService; 
 @inject NavigationManager NavigationManager
-<link href="~/css/style.css" rel="stylesheet" />
+
+<link href="css/style.css" rel="stylesheet" >
 @if(_User != null)
 {
     <div class="button-container">
@@ -51,3 +53,4 @@ else
     }
     
 }
+
