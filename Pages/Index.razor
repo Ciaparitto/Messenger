@@ -107,16 +107,16 @@
 
         if (!string.IsNullOrWhiteSpace(MessageContent) && MessageContent.Length < 512)
         {
-           
-                
-          
+
+
+
             var userId = await GetLoggedUser();
             _MessageService.AddMessage(MessageContent, ReciverId, userId);
             Message = "";
             await _hubConnection.InvokeAsync("SendMessage", MessageContent, Revicer.Id);
             AddMessageToView(AddBreakLines(MessageContent), "creatorMessages");
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
-            
+
         }
 
 
@@ -142,7 +142,7 @@
     }
     public async Task<string> GetLoggedUser()
     {
-        UserModel _User = await _UserService.GetLoggedUser();
+        UserModel _User = await _UserService.GetLoggedUser();       
         return _User.Id;
     }
     public async ValueTask DisposeAsync()

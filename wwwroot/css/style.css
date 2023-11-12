@@ -52,7 +52,7 @@
     border-radius: 15px;
 }
 .inputlogin {
-    width: 40%;
+    width: 48.5%;
     text-align:center;
    
 }
@@ -65,11 +65,13 @@
     background-color: rgb(51,187,255);
     border: none;
 }
-#loginconainer {
+#loginconainer, #regiserContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin:0px;
+    padding:0px;
 }
 .button-container {
     display: flex;
@@ -81,7 +83,7 @@
     color: white;
 }
 
-.ButtonLayOut, #ButtonSearch,#Buttonlogin {
+.ButtonLayOut, #ButtonSearch {
     background-color: rgb(51,187,255);
     padding: 10px;
     margin: 10px;
@@ -98,8 +100,13 @@
     align-items: center;
     
 }
-#Buttonlogin {
-    width: 25%;
+#Buttonlogin, #ButtonRegister {
+    background-color: rgb(51,187,255);
+    border-radius: 15px;
+    padding: 10px;
+    margin: 0px;
+    border: none;
+    width: 20%;
     display: flex;
     justify-content: center;
     align-items: center;

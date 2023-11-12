@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @using Microsoft.AspNetCore.Identity;
 @using messager.Services.Interfaces;
 @using messager.models;
@@ -8,39 +9,62 @@
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
 <link href="css/style.css" rel="stylesheet">
+@if (IsLogged)
+{
 
-<div class="pickuser">
-<h2>znajdz znajomych</h2>
-
-<div class="input">
-    <input id="inputSearch" type="text" @bind="keyWords" />
-        <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">szukaj</button>
-</div>
-    @if (Users != null && Users.Count != 0)
-    {
-        foreach(var user in Users)
+    <div class="pickuser">
+        <h2>znajdz znajomych</h2>
+        <div class="input">
+            <input id="inputSearch" type="text" @bind="keyWords" />
+            <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">szukaj</button>
+        </div>
+        @if (Users != null && Users.Count != 0)
         {
-            if (LoggedUser != null)
+            foreach (var user in Users)
             {
-                if (user.Id != LoggedUser.Id)
+                if (LoggedUser != null)
+                {
+                    if (user.Id != LoggedUser.Id)
+                    {
+                        <p></p>
+                        <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                    }
+                }
+                else
                 {
                     <p></p>
                     <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
                 }
             }
-            else
-            {
-                <p></p>
-                <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
-            }
         }
-    }
-</div>
+    </div>
+}
+else
+{
+    <div class="button-container">
+        <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("account/login"))">Zaloguj się</button>
+        <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("account/register"))">Zarejestruj się</button>
+    </div>
+}
 @code{
     private string keyWords = "";
     private List<UserModel> Users;
     private UserModel LoggedUser;
-    
+    private bool IsLogged;
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            IsLogged = true;
+        }
+        else
+        {
+            IsLogged = false;
+        }
+    }
     private void RedirectToPage(string url)
     {
         NavigationManager.NavigateTo(url, forceLoad: true);

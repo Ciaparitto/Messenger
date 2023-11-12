@@ -1,10 +1,14 @@
-﻿
+﻿<head>
+	<link href="~/css/style.css" rel="stylesheet" />
+</head>
 @model messager.models.Register
 @using (Html.BeginForm("Register", "Account", FormMethod.Post))
 {
+	<div id="regiserContainer">
 	@Html.ValidationSummary()
-	<p>Podaj nazwe uzytkownika: @Html.TextBoxFor(x=> x.UserName);</p>
-	<p>Podaj nazwe Adres Email: @Html.TextBoxFor(x=> x.EmailAdress);</p>
-	<p>Podaj Haslo uzytkownika: @Html.PasswordFor(x=> x.Password);</p>
-	<button type="submit">rejestruj</button>
+	<p>Podaj nazwe uzytkownika @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
+	<p>Podaj Email uzytkownika @Html.TextBoxFor(x=> x.EmailAdress, new {@class = "inputlogin"})</p>
+	<p>Podaj Haslo uzytkownika @Html.PasswordFor(x=> x.Password, new {@class = "inputlogin"})</p>
+	<button id="ButtonRegister"type="submit">ZAJERESTUJ</button>
+	</div>
 }
