@@ -13,20 +13,18 @@ namespace messager.Services
         private readonly UserManager<UserModel> _userManager;
         private readonly SignInManager<UserModel> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMessageService _messageService;
         private readonly IServiceScopeFactory _scopeFactory;
         
-        public UserService(IServiceScopeFactory scopeFactory,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor, IMessageService messageService, AppDbContext context)
+        public UserService(IServiceScopeFactory scopeFactory,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpContextAccessor = httpContextAccessor;
-            _messageService = messageService;
             _scopeFactory = scopeFactory;
 
 
         }
-        public async void Register(string username, string password, string Email)
+        public async Task Register(string username, string password, string Email)
         {
             var NewUser = new UserModel
             {
@@ -36,7 +34,7 @@ namespace messager.Services
             await _userManager.CreateAsync(NewUser, password);
             await _signInManager.PasswordSignInAsync(username, password, false, false);
         }
-        public async void Login(string username, string password)
+        public async Task Login(string username, string password)
         {
             await _signInManager.PasswordSignInAsync(username, password, false, false);
         }
