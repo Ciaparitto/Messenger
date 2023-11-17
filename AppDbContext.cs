@@ -17,7 +17,7 @@ namespace messager
 
        
         
-        public DbSet<MessageModel> MessageList { get; set; }
+        public virtual DbSet<MessageModel> MessageList { get; set; }
 
     }
 }
