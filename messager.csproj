@@ -7,10 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="MessagerUnitTests\**" />
     <Compile Remove="Nowy folder1\**" />
+    <Compile Remove="Nowy folder\**" />
+    <Compile Remove="obj\**" />
+    <Content Remove="bin\**" />
+    <Content Remove="MessagerUnitTests\**" />
     <Content Remove="Nowy folder1\**" />
+    <Content Remove="Nowy folder\**" />
+    <Content Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="MessagerUnitTests\**" />
     <EmbeddedResource Remove="Nowy folder1\**" />
+    <EmbeddedResource Remove="Nowy folder\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="MessagerUnitTests\**" />
     <None Remove="Nowy folder1\**" />
+    <None Remove="Nowy folder\**" />
+    <None Remove="obj\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +41,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.23" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.24">
       <PrivateAssets>all</PrivateAssets>
@@ -37,7 +54,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\JavaScript\" />
-    <Folder Include="Nowy folder\" />
   </ItemGroup>
 
   <ItemGroup>
