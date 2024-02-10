@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using messager;
 
@@ -11,9 +12,10 @@ using messager;
 namespace messager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240210153505_account-migration1")]
+    partial class accountmigration1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,10 @@ namespace messager.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId1")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -44,7 +49,7 @@ namespace messager.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId1");
 
                     b.ToTable("ImageList");
                 });
@@ -274,11 +279,45 @@ namespace messager.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Microsoft.Azure.Documents.Offer", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AltLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ETag")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OfferType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OfferVersion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResourceId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResourceLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Offer");
+                });
+
             modelBuilder.Entity("messager.Models.Image", b =>
                 {
-                    b.HasOne("messager.models.UserModel", "User")
+                    b.HasOne("Microsoft.Azure.Documents.Offer", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UserId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

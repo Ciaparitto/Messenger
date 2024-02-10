@@ -1,4 +1,6 @@
-﻿
+﻿body{
+    margin:0px;
+}
 .pickuser, .input {
     display: flex;
     flex-direction: column;
@@ -27,11 +29,12 @@
 
 #username{
     text-align:center;
+    
 }
 
 #messageConatiner {
     width: 100%;
-    height: 850px;
+    height: 770px;
     overflow: auto;  
     display: flex;
     flex-direction: column;
@@ -65,13 +68,13 @@
     background-color: rgb(51,187,255);
     border: none;
 }
-#loginconainer, #regiserContainer {
+#loginconainer, #regiserContainer, #Home-button-container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin:0px;
-    padding:0px;
+    margin: 0px;
+    padding: 0px;
 }
 .button-container {
     display: flex;
@@ -120,4 +123,9 @@
     width: 12px;
     background-color: rgb(51,187,255);
     border-radius: 15px;
+}
+#UserPhoto{
+    width:100px;
+    height:100px;
+    border-radius:100%;
 }

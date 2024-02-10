@@ -1,9 +1,12 @@
 ﻿@page "/chat/{ReciverIdForm}"
+@layout EmptyLayout
 @inject NavigationManager Navigation
 @inject HttpClient Http
+@inject AppDbContext _Context;
 @inject IJSRuntime JSRuntime
 @inject IUserService _UserService
 @inject IMessageService _MessageService
+@inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
@@ -15,11 +18,16 @@
 <PageTitle>Index</PageTitle>
 <link href="css/style.css" rel="stylesheet">
 
+
 <html>
 <body>
+    <div id="Home-button-container">
+        <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Strona Glowna</button>
+   </div>
+   
     @if (Revicer != null)
     {
-       
+        <img id="UserPhoto" src="@imageSrc" />
         <h3 id="username">@Revicer.UserName</h3>
     }
 
@@ -59,6 +67,7 @@
 </html>
 
 @code {
+    public string imageSrc = "";
     public string Message { get; set; } = "";
     public string _RenderMessage { get; set; } = "";
     private readonly UserManager<UserModel> _userManager;
@@ -69,16 +78,16 @@
     private List<MessageModel> MessageList;
     private List<MessageModel> MessageListToRemove = new List<MessageModel>();
 
+
     protected override async Task OnInitializedAsync()
     {
         Revicer = await _UserService.GetUserById(ReciverIdForm);
-        userId = await GetLoggedUser();
+        userId = await GetLoggedUserId();
         MessageList = await _MessageService.GetMessages(userId, Revicer.Id);
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
             .Build();
-
 
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
@@ -107,10 +116,7 @@
 
         if (!string.IsNullOrWhiteSpace(MessageContent) && MessageContent.Length < 512)
         {
-
-
-
-            var userId = await GetLoggedUser();
+            var userId = await GetLoggedUserId();
             _MessageService.AddMessage(MessageContent, ReciverId, userId);
             Message = "";
             await _hubConnection.InvokeAsync("SendMessage", MessageContent, Revicer.Id);
@@ -140,7 +146,7 @@
         MessageWithBreakLines = outputText.ToString();
         return MessageWithBreakLines;
     }
-    public async Task<string> GetLoggedUser()
+    public async Task<string> GetLoggedUserId()
     {
         UserModel _User = await _UserService.GetLoggedUser();       
         return _User.Id;
@@ -150,6 +156,21 @@
         if(_hubConnection != null)
         {
         await _hubConnection.DisposeAsync();
+        }
+    }
+    private void RedirectToPage(string url)
+    {
+        NavigationManager.NavigateTo(url, forceLoad: true);
+    }
+    private async Task GetUserPhoto()
+    {
+        var imageFromDatabase = _Context.ImageList.FirstOrDefault(x => x.UserId == userId);
+        if (imageFromDatabase != null)
+        {
+
+            var base64Image = Convert.ToBase64String(imageFromDatabase.image);
+            imageSrc = $"data:{imageFromDatabase.ContentType};base64,{base64Image}";
+
         }
     }
 }

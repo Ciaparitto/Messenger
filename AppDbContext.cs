@@ -1,4 +1,5 @@
 ﻿using messager.models;
+using messager.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,9 @@ namespace messager
         }
 
 
-       
-        
-        public virtual DbSet<MessageModel> MessageList { get; set; }
+		public DbSet<Image> ImageList { get; set; }
+
+		public virtual DbSet<MessageModel> MessageList { get; set; }
 
     }
 }

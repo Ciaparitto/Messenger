@@ -18,25 +18,26 @@
             <input id="inputSearch" type="text" @bind="keyWords" />
             <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">szukaj</button>
         </div>
-        @if (Users != null && Users.Count != 0)
+        @if (Users != null)
         {
-            foreach (var user in Users)
+            if (Users.Count != 0)
             {
-                if (LoggedUser != null)
+                foreach (var user in Users)
                 {
+
                     if (user.Id != LoggedUser.Id)
                     {
-                        <p></p>
+                        <br />
                         <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
                     }
                 }
-                else
-                {
-                    <p></p>
-                    <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
-                }
+            }
+            else
+            {
+                <p>nie znaleziono znajomych</p>
             }
         }
+        
     </div>
 }
 else
@@ -79,7 +80,10 @@ else
             users = users.Where(x => x.UserName.Contains(keyWords));
         }
         Users = await users.ToListAsync();
-      
+        if (Users.Contains(LoggedUser))
+        {
+            Users.Remove(LoggedUser);
+        }
         StateHasChanged();
         
 
