@@ -11,6 +11,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
 @using System.Text;
+@using System.Security.Policy
 @using messager.Services.Interfaces;
 @using messager.Services;
 @using messager.models;
@@ -27,7 +28,7 @@
    
     @if (Revicer != null)
     {
-        <img id="UserPhoto" src="@imageSrc" />
+        <img id="UserPhoto" src="/Messenger/DisplayImage?imageId=@user.ProfileImageId" />
         <h3 id="username">@Revicer.UserName</h3>
     }
 
@@ -39,7 +40,7 @@
             @foreach (var message in MessageList)
             {
 
-                @if (message.CreatorId == userId)
+                @if (message.CreatorId == user.Id)
                 {
                     AddMessageToView(AddBreakLines(message.Content), "creatorMessages");
                     
@@ -73,7 +74,7 @@
     private readonly UserManager<UserModel> _userManager;
     [Parameter] public string ReciverIdForm { get; set; }
     private HubConnection? _hubConnection;
-    private string userId;
+    private UserModel user;
     private UserModel Revicer;
     private List<MessageModel> MessageList;
     private List<MessageModel> MessageListToRemove = new List<MessageModel>();
@@ -82,8 +83,8 @@
     protected override async Task OnInitializedAsync()
     {
         Revicer = await _UserService.GetUserById(ReciverIdForm);
-        userId = await GetLoggedUserId();
-        MessageList = await _MessageService.GetMessages(userId, Revicer.Id);
+        user = await GetLoggedUser();
+        MessageList = await _MessageService.GetMessages(user.Id, Revicer.Id);
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
@@ -116,8 +117,8 @@
 
         if (!string.IsNullOrWhiteSpace(MessageContent) && MessageContent.Length < 512)
         {
-            var userId = await GetLoggedUserId();
-            _MessageService.AddMessage(MessageContent, ReciverId, userId);
+            var user = await GetLoggedUser();
+            _MessageService.AddMessage(MessageContent, ReciverId, user.Id);
             Message = "";
             await _hubConnection.InvokeAsync("SendMessage", MessageContent, Revicer.Id);
             AddMessageToView(AddBreakLines(MessageContent), "creatorMessages");
@@ -146,10 +147,17 @@
         MessageWithBreakLines = outputText.ToString();
         return MessageWithBreakLines;
     }
-    public async Task<string> GetLoggedUserId()
+    public async Task<UserModel> GetLoggedUser()
     {
-        UserModel _User = await _UserService.GetLoggedUser();       
-        return _User.Id;
+        UserModel _User = await _UserService.GetLoggedUser();    
+        if(_User != null)
+        {
+            return _User;
+        }
+        else
+        {
+            return null;
+        }
     }
     public async ValueTask DisposeAsync()
     {
@@ -162,15 +170,5 @@
     {
         NavigationManager.NavigateTo(url, forceLoad: true);
     }
-    private async Task GetUserPhoto()
-    {
-        var imageFromDatabase = _Context.ImageList.FirstOrDefault(x => x.UserId == userId);
-        if (imageFromDatabase != null)
-        {
-
-            var base64Image = Convert.ToBase64String(imageFromDatabase.image);
-            imageSrc = $"data:{imageFromDatabase.ContentType};base64,{base64Image}";
-
-        }
-    }
+  
 }

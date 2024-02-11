@@ -20,5 +20,18 @@ namespace messager
 
 		public virtual DbSet<MessageModel> MessageList { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Image>()
+                .Ignore(e => e.Tag);
+
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
+            modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
+            modelBuilder.Entity<IdentityUserToken<string>>().HasNoKey();
+           
+        }
+    
+
+
     }
 }

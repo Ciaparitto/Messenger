@@ -11,9 +11,15 @@ namespace messager.Models
 		public int id { get; set; }
 		public Byte[] image { get; set; }
 		public string ContentType { get; set; }
-        [ForeignKey("User")]
+        [ForeignKey("UserId")]
         public string UserId { get; set; }
+        public UserModel User { get; set; }
 
-		public UserModel User { get; set; }
+        [ForeignKey("MessageId")]
+        public string? MessageId { get; set; }
+
+        public MessageModel? Message { get; set; }
+        [NotMapped]
+        public string Tag { get; set; }
 	}
 }

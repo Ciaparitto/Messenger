@@ -45,5 +45,16 @@ namespace messager.Controllers
             var userList = await _UserService.GetUsers(creatorId);
             return Ok(userList); 
         }
+        public IActionResult DisplayImage(int imageId)
+        {
+            var image = _Context.ImageList.FirstOrDefault(i => i.id == imageId);
+
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            return File(image.image, "image/jpeg");
+        }
     }
 }

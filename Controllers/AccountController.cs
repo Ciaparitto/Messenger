@@ -30,13 +30,7 @@ namespace messager.Controllers
         public async Task<IActionResult> Register(Register UserData, List<IFormFile> files)
         {
 
-			Console.WriteLine("liczba zdjec" +files.Count);
-			Console.WriteLine("liczba zdjec" + files.Count);
-			Console.WriteLine("liczba zdjec" + files.Count);
-			Console.WriteLine("liczba zdjec" + files.Count);
-			Console.WriteLine("liczba zdjec" + files.Count);
-			Console.WriteLine("liczba zdjec" + files.Count);
-			Console.WriteLine("liczba zdjec" + files.Count);
+		
 			if (ModelState.IsValid)
             {
                 var NewUser = new UserModel
@@ -44,31 +38,38 @@ namespace messager.Controllers
                     Email = UserData.EmailAdress,
                     UserName = UserData.UserName,
                 };
-				await _userManager.CreateAsync(NewUser, UserData.Password);
-              //zdjecia sie nie dodaja
+                IdentityResult result = await _userManager.CreateAsync(NewUser, UserData.Password);
 
+                if (result.Succeeded)
+                {
+
+                    var createdUser = NewUser;
                     if (files != null && files.Count > 0)
                     {
-
                         foreach (var imageFile in HttpContext.Request.Form.Files)
                         {
+
                             using (var memoryStream = new MemoryStream())
                             {
+
                                 imageFile.CopyTo(memoryStream);
 
                                 var image = new Image
                                 {
                                     image = memoryStream.ToArray(),
                                     ContentType = imageFile.ContentType,
-                                    UserId = "7f67f35b-3fd6-417d-8169-59e6146d5f94"
+                                    UserId =  createdUser.Id
 
                                 };
                                 _Context.ImageList.Add(image);
-
+                                createdUser.ProfileImageId = image.id;
+                                _Context.SaveChanges();
 
                             }
                         }
                     }
+                }
+               
                 
                 else
                 {
