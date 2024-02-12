@@ -62,7 +62,9 @@ namespace messager.Controllers
 
                                 };
                                 _Context.ImageList.Add(image);
-                                createdUser.ProfileImageId = image.id;
+                                _Context.SaveChanges();
+                                NewUser.ProfileImageId = image.id;
+                                
                                 _Context.SaveChanges();
 
                             }

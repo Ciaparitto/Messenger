@@ -1,0 +1,34 @@
+﻿@page "/Test"
+@inject IUserService _UserService
+@inject HttpClient HttpClient
+@using messager.Models
+@using messager.Services.Interfaces
+@using messager.models
+<h3>test</h3>
+<img id="UserPhoto" src="@imageData?.Url" />
+@code {
+    public ImageData imageData;
+
+    public UserModel LoggedUser;
+    protected override async Task OnInitializedAsync()
+    {
+        LoggedUser = await _UserService.GetLoggedUser();
+        var imageId = LoggedUser.ProfileImageId;
+        var response = await HttpClient.GetAsync($"api/Image/DisplayImage/{imageId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            imageData = new ImageData { Url = await response.Content.ReadAsStringAsync() };
+        }
+        else
+        {
+            // Handle error
+            imageData = null;
+        }
+    }
+
+    public class ImageData
+    {
+        public string Url { get; set; }
+    }
+}

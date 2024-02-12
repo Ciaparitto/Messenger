@@ -54,7 +54,7 @@ namespace messager.Controllers
                 return NotFound();
             }
 
-            return File(image.image, "image/jpeg");
+            return File(image.image, image.ContentType);
         }
     }
 }

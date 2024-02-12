@@ -6,8 +6,6 @@ namespace messager.models
 {
     public class UserModel : IdentityUser
     {
-
-      
         public int? ProfileImageId { get; set; }
 
 
