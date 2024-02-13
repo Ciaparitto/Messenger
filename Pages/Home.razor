@@ -1,19 +1,23 @@
 ﻿@page "/"
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
+
 @using Microsoft.AspNetCore.Identity;
 @using messager.Services.Interfaces;
 @using messager.models;
 @using Microsoft.EntityFrameworkCore;
+@inject AppDbContext _Context;
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
-<link href="css/style.css" rel="stylesheet">
 
+<link href="css/style.css" rel="stylesheet">
+@if (LoggedUser != null)
+{
     <div class="pickuser">
         <h2>znajdz znajomych  </h2>
-       
+
         <div class="input">
             <input id="inputSearch" type="text" @bind="keyWords" />
             <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">szukaj</button>
@@ -32,25 +36,35 @@
                     }
                 }
             }
-            else
-            {
-                <p>nie znaleziono znajomych</p>
-            }
+           
         }
-        
     </div>
+  
 
-
+}
+else
+{
+   <h1>loading</h1>
+}
 @code{
     private string keyWords = "";
     private List<UserModel> Users;
     private UserModel LoggedUser;
+    private List<UserModel> UserList;
     private bool IsLogged;
     protected override async Task OnInitializedAsync()
     {
 
-        LoggedUser = await _UserService.GetLoggedUser();
-        Console.WriteLine(LoggedUser.UserName);
+        LoggedUser = await _UserService.GetLoggedUser(_Context);
+        if(LoggedUser == null)
+        {
+            RedirectToPage("/Account/Login");
+        }
+        if (LoggedUser != null)
+        {
+            UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
+        }
+
     }
     private void RedirectToPage(string url)
     {
@@ -59,7 +73,8 @@
     public async Task GetUsers()
     {
         
-        
+      
+
         var users = _userManager.Users.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyWords))

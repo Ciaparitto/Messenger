@@ -4,6 +4,7 @@
 @inject HttpClient Http
 @inject IUserService _UserService; 
 @inject NavigationManager NavigationManager
+@inject AppDbContext _Context
 
 <link href="css/style.css" rel="stylesheet" >
 @if(_User != null)
@@ -36,7 +37,7 @@ else
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     protected override async Task OnInitializedAsync()
     {
-        _User = await _UserService.GetLoggedUser();
+        _User = await _UserService.GetLoggedUser(_Context);
         if (_User != null)
         {
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={_User.Id}");

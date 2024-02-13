@@ -14,14 +14,14 @@ namespace messager.Services
         private readonly SignInManager<UserModel> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMessageService _MessageService;
-        
-        public UserService(IMessageService MessageService, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor)
+        private readonly AppDbContext _Context;
+        public UserService(IMessageService MessageService, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor,AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpContextAccessor = httpContextAccessor;
             _MessageService = MessageService;
-
+            _Context = context;
 
         }
         public async Task Register(string username, string password, string Email)
@@ -42,7 +42,7 @@ namespace messager.Services
         {
             await _signInManager.SignOutAsync();
         }
-        public async Task<UserModel> GetLoggedUser()
+        public async Task<UserModel> GetLoggedUser(AppDbContext dbContext)
         {
             var _User = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             if (_User != null)
@@ -51,7 +51,8 @@ namespace messager.Services
             }
             return null;
         }
-       
+
+
         public async Task<UserModel> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -65,7 +66,7 @@ namespace messager.Services
         public async Task<List<UserModel>> GetUsers(string CreatorId)
         {              
             var MessageList = await _MessageService.GetMessages(CreatorId);
-            var _User = GetLoggedUser();
+            var _User = GetLoggedUser(_Context);
             HashSet<string> UserIds = new HashSet<string>(MessageList.Select(msg => msg.ReciverId));
             var UserList = await GetUsersByIds(UserIds);
             return UserList;                           

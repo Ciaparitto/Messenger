@@ -45,6 +45,8 @@ namespace messager.Controllers
             var userList = await _UserService.GetUsers(creatorId);
             return Ok(userList); 
         }
+        [HttpGet]
+        [Route("/DisplayImage/{imageId}")]
         public IActionResult DisplayImage(int imageId)
         {
             var image = _Context.ImageList.FirstOrDefault(i => i.id == imageId);

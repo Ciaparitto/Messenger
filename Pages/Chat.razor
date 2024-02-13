@@ -26,9 +26,9 @@
         <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Strona Glowna</button>
    </div>
    
-    @if (Revicer != null)
+    @if (Revicer != null && user != null)
     {
-        <img id="UserPhoto" src="/Messenger/DisplayImage?imageId=@user.ProfileImageId" />
+        <img id="UserPhoto" src="@($"/DisplayImage/{user.ProfileImageId}")" />
 
         <h3 id="username">@Revicer.UserName</h3>
     }
@@ -100,7 +100,7 @@
         });
 
         await _hubConnection.StartAsync();
-        UserModel _User = await _UserService.GetLoggedUser();
+        UserModel _User = await _UserService.GetLoggedUser(_Context);
         await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
         if(MessageList.Count == 0)
         {
@@ -150,7 +150,7 @@
     }
     public async Task<UserModel> GetLoggedUser()
     {
-        UserModel _User = await _UserService.GetLoggedUser();    
+        UserModel _User = await _UserService.GetLoggedUser(_Context);
         if(_User != null)
         {
             return _User;
