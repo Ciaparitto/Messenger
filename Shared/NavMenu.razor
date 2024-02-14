@@ -1,31 +1,22 @@
-﻿
-@using messager.Services.Interfaces;
+﻿@using messager.Services.Interfaces;
 @using messager.models;
 @inject HttpClient Http
-@inject IUserService _UserService; 
+@inject IUserService _UserService;
 @inject NavigationManager NavigationManager
 @inject AppDbContext _Context
 
-<link href="css/style.css" rel="stylesheet" >
-@if(_User != null)
+<link href="css/style.css" rel="stylesheet">
+@if (_User != null)
 {
     <div class="button-container">
         <p>ostatnie wiadomosci:</p>
         @if (UserList != null && UserList.Count != 0)
-    {
-    @foreach(var user in UserList)
-    {
-            <button class="ButtonLayOut" @onclick="@(() => RedirectToCshtml($"chat/{user.Id}"))">@user.UserName</button>
-    }
-    }
-    </div>
-}
-else
-{
-  
-    <div class="button-container">
-        <button class="ButtonLayOut" @onclick="@(() => RedirectToCshtml("account/login"))">Zaloguj się</button>
-        <button class="ButtonLayOut" @onclick="@(() => RedirectToCshtml("account/register"))">Zarejestruj się</button>
+        {
+            @foreach (var user in UserList)
+            {
+                <button class="ButtonLayOut" @onclick="@(() => RedirectToCshtml($"chat/{user.Id}"))">@user.UserName</button>
+            }
+        }
     </div>
 }
 
@@ -37,11 +28,13 @@ else
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     protected override async Task OnInitializedAsync()
     {
+        /*
         _User = await _UserService.GetLoggedUser(_Context);
         if (_User != null)
         {
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={_User.Id}");
         }
+        */
     }
     private void RedirectToCshtml(string url)
     {
@@ -52,6 +45,6 @@ else
     {
         collapseNavMenu = !collapseNavMenu;
     }
-    
+
 }
 

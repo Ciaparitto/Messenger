@@ -20,17 +20,17 @@
 <link href="css/style.css" rel="stylesheet">
 
 
-<html>
-<body>
+
+
     <div id="Home-button-container">
         <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Strona Glowna</button>
    </div>
    
-    @if (Revicer != null && user != null)
+    @if (Reciver != null && user != null)
     {
-        <img id="UserPhoto" src="@($"/DisplayImage/{user.ProfileImageId}")" />
 
-        <h3 id="username">@Revicer.UserName</h3>
+        <img id="UserPhoto" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+        <h3 id="username">@Reciver.UserName</h3>
     }
 
        
@@ -43,12 +43,14 @@
 
                 @if (message.CreatorId == user.Id)
                 {
-                    AddMessageToView(AddBreakLines(message.Content), "creatorMessages");
+
+                AddMessageToView(AddBreakLines(message.Content), "creatorMessages", user.ProfileImageId.ToString(),"creatorImg");
                     
                 }
                 else
                 {
-                    AddMessageToView(AddBreakLines(message.Content), "reciverMessages");
+
+                AddMessageToView(AddBreakLines(message.Content), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
                 }
                 MessageListToRemove.Add(message);
             }
@@ -63,10 +65,8 @@
         }
     </div>
     <input id="inputChat"type="text" name="Message" @bind="Message" />
-    <button id="sendbutton" @onclick="() => SendMessage(Message,Revicer.Id)">napisz</button>
-</body>
+    <button id="sendbutton" @onclick="() => SendMessage(Message,Reciver.Id)">napisz</button>
 
-</html>
 
 @code {
     public string imageSrc = "";
@@ -76,16 +76,16 @@
     [Parameter] public string ReciverIdForm { get; set; }
     private HubConnection? _hubConnection;
     private UserModel user;
-    private UserModel Revicer;
+    private UserModel Reciver;
     private List<MessageModel> MessageList;
     private List<MessageModel> MessageListToRemove = new List<MessageModel>();
 
 
     protected override async Task OnInitializedAsync()
     {
-        Revicer = await _UserService.GetUserById(ReciverIdForm);
+        Reciver = await _UserService.GetUserById(ReciverIdForm);
         user = await GetLoggedUser();
-        MessageList = await _MessageService.GetMessages(user.Id, Revicer.Id);
+        MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
@@ -94,7 +94,7 @@
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
 
-            AddMessageToView(AddBreakLines(message), "reciverMessages");
+            AddMessageToView(AddBreakLines(message), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
             JSRuntime.InvokeVoidAsync("scrollToBottom");
 
         });
@@ -109,9 +109,9 @@
 
     }
 
-    private async Task AddMessageToView(string MessageContent,string ElementId)
+    private async Task AddMessageToView(string MessageContent, string MessClassName, string ProfileId,string ImgClassName )
     {
-        await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, ElementId);
+        await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, MessClassName, ProfileId, ImgClassName);
     }
     private async Task SendMessage(string MessageContent, string ReciverId)
     {
@@ -121,8 +121,8 @@
             var user = await GetLoggedUser();
             _MessageService.AddMessage(MessageContent, ReciverId, user.Id);
             Message = "";
-            await _hubConnection.InvokeAsync("SendMessage", MessageContent, Revicer.Id);
-            AddMessageToView(AddBreakLines(MessageContent), "creatorMessages");
+            await _hubConnection.InvokeAsync("SendMessage", MessageContent, Reciver.Id);
+            AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", user.ProfileImageId.ToString(), "creatorImg");
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
 
         }

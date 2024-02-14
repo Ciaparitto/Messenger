@@ -15,6 +15,16 @@
 <link href="css/style.css" rel="stylesheet">
 @if (LoggedUser != null)
 {
+      <div id="LastedMessages">
+        <p>ostatnie wiadomosci:</p>
+        @if (UserList != null && UserList.Count != 0)
+        {
+            @foreach (var user in UserList)
+            {
+                <button class="ButtonLayOut" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+            }
+        }
+    </div>
     <div class="pickuser">
         <h2>znajdz znajomych  </h2>
 
@@ -22,21 +32,30 @@
             <input id="inputSearch" type="text" @bind="keyWords" />
             <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">szukaj</button>
         </div>
-        @if (Users != null)
-        {
-            if (Users.Count != 0)
-            {
-                foreach (var user in Users)
-                {
 
-                    if (user.Id != LoggedUser.Id)
-                    {
-                        <br />
-                        <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
-                    }
+        @if (Users != null && Users.Count != 0)
+        {
+            foreach (var user in Users)
+            {
+
+                if (user.Id != LoggedUser.Id)
+                {
+                    <br />
+                    <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
                 }
             }
-           
+                     
+        }
+       
+    </div>
+    <div id="FrirendOnline">
+        <h2>twoi znajomi online</h2>
+        @if (OnlineFreinds != null && OnlineFreinds.Count != 0)
+        {
+            @foreach (var user in OnlineFreinds)
+            {
+                <button class="ButtonLayOut" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+            }
         }
     </div>
   
@@ -48,6 +67,7 @@ else
 }
 @code{
     private string keyWords = "";
+    private List<UserModel> OnlineFreinds;
     private List<UserModel> Users;
     private UserModel LoggedUser;
     private List<UserModel> UserList;
