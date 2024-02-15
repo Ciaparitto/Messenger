@@ -1,5 +1,5 @@
 ﻿@page "/chat/{ReciverIdForm}"
-@layout EmptyLayout
+
 @inject NavigationManager Navigation
 @inject HttpClient Http
 @inject AppDbContext _Context;
@@ -22,15 +22,19 @@
 
 
 
-    <div id="Home-button-container">
-        <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Strona Glowna</button>
-   </div>
+   
    
     @if (Reciver != null && user != null)
     {
-
-        <img id="UserPhoto" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+    <div id="ReciverInfo">
+        <div id="Home-button-container">
+            <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Strona Glowna</button>
+        </div>
+       <div id="ImgAndUsername">
+        <img id="UserPhoto" src="@($"/DisplayImage/{Reciver.ProfileImageId}")" />
         <h3 id="username">@Reciver.UserName</h3>
+        </div>
+    </div>
     }
 
        

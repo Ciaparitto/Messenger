@@ -15,38 +15,10 @@
     padding-top:50px;
     
 }
-.creatorMessages {
-    background-color: rgb(51,187,255);
-    padding: 10px;
-    margin: 10px;
-    align-self: flex-end;
-    display: table;
-    border-radius: 15px;
-    float:right;
-}
 
-.reciverMessages {
-    background-color: rgb(255,85,51);
-    padding: 10px;
-    margin: 10px;
-    align-self: flex-start;
-    display: table;
-    border-radius: 15px;
-}
 
-#username{
-    text-align:center;
-    
-}
 
-#messageConatiner {
-    width: 100%;
-    height: 770px;
-    overflow: auto;  
-    display: flex;
-    flex-direction: column;
-    
-}
+
 
 #inputChat {
     width: 90%;
@@ -132,14 +104,12 @@
     background-color: rgb(51,187,255);
     border-radius: 15px;
 }
-.reciverImg, .creatorImg, #UserPhoto, .photo {
+.photo {
     width: 10px;
     height: 10px;
     border-radius: 100%;
 }
-.MessageImgContainer {
-  
-}
+
 #LastedMessages, #FrirendOnline {
     background-color: lightblue;
     width: 20%;
@@ -151,12 +121,81 @@
 #FrirendOnline{
     float:right;
 }
-
 .creatorImg {
     float: right;
-
+    height: 100%;
+    padding-left:5px;
+  
 }
-.creatorMessagesContainer {
-   
+.reciverImg {
+    float: left;
+    height: 100%;
+    padding-right: 5px;
+}
+.MessageContainerChildcreatorMessages {
     float: right;
+}
+.MessageContainerChildreciverMessages {
+    float: left;
+}
+#messageConatiner {
+    width: 99%;
+    height: 87vh;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    margin:0 0.5%;
+}
+.creatorMessages {
+    background-color: rgb(51,187,255);
+    padding: 10px;
+    float: left;
+
+    display: table;
+    border-radius: 15px;
+}
+
+.reciverMessages {
+    background-color: rgb(255,85,51);
+    padding: 10px;
+    float:right;
+    display: table;
+    border-radius: 15px;
+}
+.creatorMessagesContainer, .reciverMessagesContainer {
+    margin: 10px 0px;
+}
+#UserPhoto {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    float: left;
+    margin: 0px 5px;
+}
+#username {
+    float: left;
+    margin: 0px;
+    
+}
+.ButtonLayOut{
+    background-color: rgb(51,187,255);
+    padding: 10px;
+    margin:0px 1%;
+    display: table;
+    border-radius: 15px;
+    border: none;
+    float:left;
+    
+}
+#ReciverInfo {
+margin: 0.5% 0.5% 0 0.5%;
+}
+#ImgAndUsername {
+    margin-right: 50%;
+    float: right;
+    display: flex;
+    align-items: center;
+}
+#Home-button-container{
+    float:left;
 }
