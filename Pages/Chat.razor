@@ -6,7 +6,7 @@
 @inject IJSRuntime JSRuntime
 @inject IUserService _UserService
 @inject IMessageService _MessageService
-@inject NavigationManager NavigationManager
+
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
@@ -92,8 +92,11 @@
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
-            .Build();
+      .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
+      .Build();
+
+
+        await _hubConnection.StartAsync();
 
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
@@ -103,7 +106,6 @@
 
         });
 
-        await _hubConnection.StartAsync();
         UserModel _User = await _UserService.GetLoggedUser(_Context);
         await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
         if(MessageList.Count == 0)
@@ -173,7 +175,7 @@
     }
     private void RedirectToPage(string url)
     {
-        NavigationManager.NavigateTo(url, forceLoad: true);
+        Navigation.NavigateTo(url, forceLoad: true);
     }
   
 }

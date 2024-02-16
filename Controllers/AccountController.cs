@@ -1,5 +1,6 @@
 ﻿using messager.models;
 using messager.Models;
+using messager.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Documents;
@@ -15,11 +16,13 @@ namespace messager.Controllers
         private readonly UserManager<UserModel> _userManager;
         private readonly SignInManager<UserModel> _signInManager;
         private readonly AppDbContext _Context;
-        public AccountController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, AppDbContext context)
+        private readonly IUserService _UserService;
+        public AccountController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, AppDbContext context,IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _Context = context;
+            _UserService = userService;
         }
         [HttpGet]
         public IActionResult Register()
@@ -108,6 +111,12 @@ namespace messager.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+        [HttpGet]
+        public async Task<UserModel> GetLoggedUser()
+        {
+            var user = await _UserService.GetLoggedUser(_Context);
+            return user;
         }
 
     }

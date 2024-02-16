@@ -3,12 +3,14 @@
 @attribute [Authorize]
 
 @using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using messager.Services.Interfaces;
 @using messager.models;
 @using Microsoft.EntityFrameworkCore;
 @inject AppDbContext _Context;
 @inject HttpClient Http
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
 
@@ -72,8 +74,15 @@ else
     private UserModel LoggedUser;
     private List<UserModel> UserList;
     private bool IsLogged;
+    private HubConnection? _hubConnection;
     protected override async Task OnInitializedAsync()
     {
+        _hubConnection = new HubConnectionBuilder()
+       .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
+       .Build();
+
+        await _hubConnection.StartAsync();
+
 
         LoggedUser = await _UserService.GetLoggedUser(_Context);
         if(LoggedUser == null)
@@ -85,10 +94,12 @@ else
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
         }
 
+      
+
     }
     private void RedirectToPage(string url)
     {
-        NavigationManager.NavigateTo(url, forceLoad: true);
+        Navigation.NavigateTo(url, forceLoad: true);
     }
     public async Task GetUsers()
     {
