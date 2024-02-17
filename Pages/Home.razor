@@ -69,6 +69,7 @@ else
 }
 @code{
     private string keyWords = "";
+    private string userId;
     private List<UserModel> OnlineFreinds;
     private List<UserModel> Users;
     private UserModel LoggedUser;
@@ -77,11 +78,7 @@ else
     private HubConnection? _hubConnection;
     protected override async Task OnInitializedAsync()
     {
-        _hubConnection = new HubConnectionBuilder()
-       .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
-       .Build();
-
-        await _hubConnection.StartAsync();
+     
 
 
         LoggedUser = await _UserService.GetLoggedUser(_Context);
@@ -92,9 +89,16 @@ else
         if (LoggedUser != null)
         {
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
+            userId = LoggedUser.Id;
         }
+     
 
-      
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri($"/testhub?userId={userId}"))
+            .Build();
+
+        await _hubConnection.StartAsync();
+
 
     }
     private void RedirectToPage(string url)

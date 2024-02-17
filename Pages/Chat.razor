@@ -90,11 +90,11 @@
         Reciver = await _UserService.GetUserById(ReciverIdForm);
         user = await GetLoggedUser();
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
+        var userId = user.Id;
 
         _hubConnection = new HubConnectionBuilder()
-      .WithUrl(Navigation.ToAbsoluteUri("/testhub"))
-      .Build();
-
+    .WithUrl(Navigation.ToAbsoluteUri($"/testhub?userId={userId}"))
+    .Build();
 
         await _hubConnection.StartAsync();
 
