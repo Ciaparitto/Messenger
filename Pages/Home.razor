@@ -13,7 +13,7 @@
 @inject NavigationManager Navigation
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
-
+<SignalRManager />
 <link href="css/style.css" rel="stylesheet">
 @if (LoggedUser != null)
 {
@@ -81,7 +81,7 @@ else
      
 
 
-        LoggedUser = await _UserService.GetLoggedUser(_Context);
+        LoggedUser = await _UserService.GetLoggedUser();
         if(LoggedUser == null)
         {
             RedirectToPage("/Account/Login");
@@ -92,14 +92,10 @@ else
             userId = LoggedUser.Id;
         }
      
+        
+      
 
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri($"/testhub?userId={userId}"))
-            .Build();
-
-        await _hubConnection.StartAsync();
-
-
+        
     }
     private void RedirectToPage(string url)
     {

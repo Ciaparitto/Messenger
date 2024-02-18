@@ -16,34 +16,38 @@ namespace messager
 {
     public class AppHub :Hub
     {
+        private static readonly Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
+
         private readonly AppDbContext _Context;
         private readonly IUserService _UserService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<AppHub> _logger;
-        public AppHub(AppDbContext context,IUserService userService, IHttpContextAccessor httpContextAccessor, ILogger<AppHub> logger)
+       
+        public AppHub(AppDbContext context,IUserService userService)
         {
             _Context = context;
             _UserService = userService;
-            _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
+          
+            
         }
+       
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var userId = Context.UserIdentifier;
-
-            Console.WriteLine(userId);
-          
-            if (userId != null)
+            var connectionId = Context.ConnectionId;
+            var userId = ConnectionUserMap[connectionId];
+           
+            /*
+            if (!string.IsNullOrWhiteSpace(userId) && userId != null)
             {
 
                 var user = await _Context.Users.FirstOrDefaultAsync(x => x.Id == userId);
                 user.IsOnline = false;
                 await _Context.SaveChangesAsync();
-                Console.WriteLine("zmiana statusu false");
+                Console.WriteLine("zmiana statusu flase");
             }
 
+            */
+            ConnectionUserMap.Remove(connectionId);
             await base.OnDisconnectedAsync(exception);
-
+            Console.WriteLine(ConnectionUserMap.Count);
             Console.WriteLine("koniec polaczenia");
         }
 
@@ -52,40 +56,27 @@ namespace messager
         {
 
             var userId = Context.GetHttpContext().Request.Query["userId"].FirstOrDefault();
-             
-            if(!string.IsNullOrWhiteSpace(userId) && userId != null)
-            {
-           
-                var user = await _Context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-                user.IsOnline = true;
-                await _Context.SaveChangesAsync();
-                Console.WriteLine("zmiana statusu true");
-            }
-             
-            
-           
+            var connectionId = Context.ConnectionId;
+            ConnectionUserMap[connectionId] = userId;
+            Console.WriteLine(ConnectionUserMap.Count);
+            /*
+           if (!string.IsNullOrWhiteSpace(userId) && userId != null)
+           {
+
+               var user = await _Context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+               user.IsOnline = true;
+               await _Context.SaveChangesAsync();
+               Console.WriteLine("zmiana statusu true");
+           }
+
+           */
+
 
             await base.OnConnectedAsync();
 
             Console.WriteLine("Start polaczenia");
         }
-        public async Task<UserModel> GetUser()
-        {
-            var user = Context.User;
-
-            if (user.Identity != null && user.Identity.IsAuthenticated)
-            {
-                _logger.LogInformation($"Użytkownik {user.Identity.Name} jest uwierzytelniony.");
-            }
-            else
-            {
-                _logger.LogInformation("Brak uwierzytelnionego użytkownika.");
-            }
-
-            var user1 = await _UserService.GetLoggedUser(_Context);
-         
-            return user1;
-        }
+    
         public async Task SendMessage(string message,string UserId)
         {
             

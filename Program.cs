@@ -13,6 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
+using messager.Pages;
 
 
  var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +23,15 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSignalR();
+
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+    options.KeepAliveInterval = TimeSpan.FromSeconds(20);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(20);
+});
+
+builder.Services.AddSingleton<SignalRManager>();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMessageService, MessageService>();

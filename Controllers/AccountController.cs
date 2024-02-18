@@ -115,7 +115,7 @@ namespace messager.Controllers
         [HttpGet]
         public async Task<UserModel> GetLoggedUser()
         {
-            var user = await _UserService.GetLoggedUser(_Context);
+            var user = await _UserService.GetLoggedUser();
             return user;
         }
 

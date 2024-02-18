@@ -16,7 +16,10 @@
 @using messager.Services;
 @using messager.models;
 @implements IAsyncDisposable
+@inject SignalRManager SignalRManager
+
 <PageTitle>Index</PageTitle>
+
 <link href="css/style.css" rel="stylesheet">
 
 
@@ -78,7 +81,7 @@
     public string _RenderMessage { get; set; } = "";
     private readonly UserManager<UserModel> _userManager;
     [Parameter] public string ReciverIdForm { get; set; }
-    private HubConnection? _hubConnection;
+    public HubConnection? _hubConnection;
     private UserModel user;
     private UserModel Reciver;
     private List<MessageModel> MessageList;
@@ -91,13 +94,9 @@
         user = await GetLoggedUser();
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
         var userId = user.Id;
-
-        _hubConnection = new HubConnectionBuilder()
-    .WithUrl(Navigation.ToAbsoluteUri($"/testhub?userId={userId}"))
-    .Build();
-
-        await _hubConnection.StartAsync();
-
+        
+        _hubConnection = SignalRManager.hubConnection;
+        
         _hubConnection.On<string>("ReciveNotification", (message) =>
         {
 
@@ -106,7 +105,7 @@
 
         });
 
-        UserModel _User = await _UserService.GetLoggedUser(_Context);
+        UserModel _User = await _UserService.GetLoggedUser();
         await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
         if(MessageList.Count == 0)
         {
@@ -156,7 +155,7 @@
     }
     public async Task<UserModel> GetLoggedUser()
     {
-        UserModel _User = await _UserService.GetLoggedUser(_Context);
+        UserModel _User = await _UserService.GetLoggedUser();
         if(_User != null)
         {
             return _User;

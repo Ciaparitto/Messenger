@@ -42,7 +42,7 @@ namespace messager.Services
         {
             await _signInManager.SignOutAsync();
         }
-        public async Task<UserModel> GetLoggedUser(AppDbContext dbContext)
+        public async Task<UserModel> GetLoggedUser()
         {
             var _User = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             if (_User != null)
@@ -74,7 +74,7 @@ namespace messager.Services
         public async Task<List<UserModel>> GetUsers(string CreatorId)
         {              
             var MessageList = await _MessageService.GetMessages(CreatorId);
-            var _User = GetLoggedUser(_Context);
+            var _User = GetLoggedUser();
             HashSet<string> UserIds = new HashSet<string>(MessageList.Select(msg => msg.ReciverId));
             var UserList = await GetUsersByIds(UserIds);
             return UserList;                           
