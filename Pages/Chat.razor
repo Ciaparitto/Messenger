@@ -16,7 +16,7 @@
 @using messager.Services;
 @using messager.models;
 @implements IAsyncDisposable
-@inject SignalRManager SignalRManager
+@inject SignalRManager _SignalManager;
 
 <PageTitle>Index</PageTitle>
 
@@ -90,30 +90,37 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _hubConnection = _SignalManager.hubConnection;
+
         Reciver = await _UserService.GetUserById(ReciverIdForm);
-        user = await GetLoggedUser();
+        user = await _UserService.GetLoggedUser();
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
+     
         var userId = user.Id;
         
-        _hubConnection = SignalRManager.hubConnection;
-        
         _hubConnection.On<string>("ReciveNotification", (message) =>
-        {
+           {
 
-            AddMessageToView(AddBreakLines(message), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
-            JSRuntime.InvokeVoidAsync("scrollToBottom");
+               AddMessageToView(AddBreakLines(message), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
+               JSRuntime.InvokeVoidAsync("scrollToBottom");
 
-        });
+           });
 
-        UserModel _User = await _UserService.GetLoggedUser();
-        await _hubConnection.InvokeAsync("JoinGroup", _User.Id);
+
+           await _hubConnection.InvokeAsync("JoinGroup", user.Id);
+
+         
         if(MessageList.Count == 0)
         {
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
         }
 
     }
-
+    public async ValueTask DisposeAsync()
+    {
+       
+        
+    }
     private async Task AddMessageToView(string MessageContent, string MessClassName, string ProfileId,string ImgClassName )
     {
         await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, MessClassName, ProfileId, ImgClassName);
@@ -123,7 +130,7 @@
 
         if (!string.IsNullOrWhiteSpace(MessageContent) && MessageContent.Length < 512)
         {
-            var user = await GetLoggedUser();
+          
             _MessageService.AddMessage(MessageContent, ReciverId, user.Id);
             Message = "";
             await _hubConnection.InvokeAsync("SendMessage", MessageContent, Reciver.Id);
@@ -153,25 +160,8 @@
         MessageWithBreakLines = outputText.ToString();
         return MessageWithBreakLines;
     }
-    public async Task<UserModel> GetLoggedUser()
-    {
-        UserModel _User = await _UserService.GetLoggedUser();
-        if(_User != null)
-        {
-            return _User;
-        }
-        else
-        {
-            return null;
-        }
-    }
-    public async ValueTask DisposeAsync()
-    {
-        if(_hubConnection != null)
-        {
-        await _hubConnection.DisposeAsync();
-        }
-    }
+  
+   
     private void RedirectToPage(string url)
     {
         Navigation.NavigateTo(url, forceLoad: true);

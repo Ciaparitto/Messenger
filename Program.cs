@@ -32,6 +32,7 @@ builder.Services.AddSignalR(options =>
 });
 
 builder.Services.AddSingleton<SignalRManager>();
+
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMessageService, MessageService>();

@@ -3,8 +3,10 @@
 @attribute [Authorize]
 
 @using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.SignalR
 @using Microsoft.AspNetCore.SignalR.Client
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using messager.Services
 @using messager.Services.Interfaces;
 @using messager.models;
 @using Microsoft.EntityFrameworkCore;
@@ -13,7 +15,8 @@
 @inject NavigationManager Navigation
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
-<SignalRManager />
+@inject SignalRManager _SignalManager;
+
 <link href="css/style.css" rel="stylesheet">
 @if (LoggedUser != null)
 {
@@ -76,10 +79,11 @@ else
     private List<UserModel> UserList;
     private bool IsLogged;
     private HubConnection? _hubConnection;
+
     protected override async Task OnInitializedAsync()
     {
-     
 
+        _hubConnection = _SignalManager.hubConnection;
 
         LoggedUser = await _UserService.GetLoggedUser();
         if(LoggedUser == null)
@@ -91,9 +95,9 @@ else
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
             userId = LoggedUser.Id;
         }
-     
-        
-      
+
+        var Dict = _SignalManager.GetConnectionUserMap();
+        Console.WriteLine("Liczba polaczen to " +Dict.Count);
 
         
     }

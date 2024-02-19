@@ -16,7 +16,7 @@ namespace messager
 {
     public class AppHub :Hub
     {
-        private static readonly Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
+        public static  Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
 
         private readonly AppDbContext _Context;
         private readonly IUserService _UserService;
@@ -76,7 +76,10 @@ namespace messager
 
             Console.WriteLine("Start polaczenia");
         }
-    
+        public Dictionary<string, string> GetConnectionUserMap()
+        {
+            return ConnectionUserMap;
+        }
         public async Task SendMessage(string message,string UserId)
         {
             
