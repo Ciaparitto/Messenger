@@ -80,13 +80,14 @@ namespace messager
         {
             return ConnectionUserMap;
         }
-        public async Task SendMessage(string message,string UserId)
+        public string GetConnectionId()
         {
-            
-          
+            return Context.ConnectionId.ToString();
+        }
+        public async Task SendMessage(string message,string UserId)
+        {  
             await Clients.Groups(UserId).SendAsync("ReciveNotification", message);
-         
-           
+                  
         }
         public async Task SendToAll(UserModel User)
         {

@@ -55,14 +55,15 @@
     </div>
     <div id="FrirendOnline">
         <h2>twoi znajomi online</h2>
-        @if (OnlineFreinds != null && OnlineFreinds.Count != 0)
+        @if (OnlineFriendsList != null && OnlineFriendsList.Count != 0)
         {
-            @foreach (var user in OnlineFreinds)
+            @foreach (var user in OnlineFriendsList)
             {
                 <button class="ButtonLayOut" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
             }
         }
     </div>
+    
   
 
 }
@@ -73,17 +74,21 @@ else
 @code{
     private string keyWords = "";
     private string userId;
-    private List<UserModel> OnlineFreinds;
+    public string TEST;
+    private bool disposed = false;
+
     private List<UserModel> Users;
     private UserModel LoggedUser;
-    private List<UserModel> UserList;
+    private List<UserModel> UserList = new List<UserModel>();
+    private List<UserModel> OnlineFriendsList;
     private bool IsLogged;
     private HubConnection? _hubConnection;
-
+    public static Dictionary<string, string> ConnectionsMap;
     protected override async Task OnInitializedAsync()
     {
 
-        _hubConnection = _SignalManager.hubConnection;
+
+
 
         LoggedUser = await _UserService.GetLoggedUser();
         if(LoggedUser == null)
@@ -95,21 +100,37 @@ else
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
             userId = LoggedUser.Id;
         }
+        var url = $"https://localhost:7097/testhub?userId={userId}";
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(url)
+            .Build();
 
-        var Dict = _SignalManager.GetConnectionUserMap();
-        Console.WriteLine("Liczba polaczen to " +Dict.Count);
+        _hubConnection.StartAsync();
 
+        ConnectionsMap = _SignalManager.GetConnectionUserMap();
+      
+        foreach (var user in UserList)
+            {
+                foreach (var connection in ConnectionsMap)
+                {
+                    if (connection.Value == user.Id)
+                    {
+                        OnlineFriendsList.Add(user);
+                      //nie dodaje nwm czemu
+                    }
+                }
+            }
         
+
     }
+
+  
     private void RedirectToPage(string url)
     {
         Navigation.NavigateTo(url, forceLoad: true);
     }
     public async Task GetUsers()
     {
-        
-      
-
         var users = _userManager.Users.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyWords))
@@ -121,8 +142,16 @@ else
         {
             Users.Remove(LoggedUser);
         }
-        StateHasChanged();
-        
+        StateHasChanged();      
+    }
 
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 }

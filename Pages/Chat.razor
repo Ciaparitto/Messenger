@@ -90,14 +90,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _hubConnection = _SignalManager.hubConnection;
+      
 
         Reciver = await _UserService.GetUserById(ReciverIdForm);
         user = await _UserService.GetLoggedUser();
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
      
-        var userId = user.Id;
-        
+        var url = $"https://localhost:7097/testhub?userId={user.Id}";
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(url)
+            .Build();
+        _hubConnection.StartAsync();
         _hubConnection.On<string>("ReciveNotification", (message) =>
            {
 
@@ -118,8 +121,12 @@
     }
     public async ValueTask DisposeAsync()
     {
-       
-        
+
+        if (_hubConnection != null)
+        {
+            await _hubConnection.StopAsync();
+            _hubConnection.DisposeAsync();
+        }
     }
     private async Task AddMessageToView(string MessageContent, string MessClassName, string ProfileId,string ImgClassName )
     {
