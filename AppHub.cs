@@ -16,7 +16,7 @@ namespace messager
 {
     public class AppHub :Hub
     {
-        public static  Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
+        public static Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
 
         private readonly AppDbContext _Context;
         private readonly IUserService _UserService;
@@ -55,26 +55,40 @@ namespace messager
         public override async Task OnConnectedAsync()
         {
 
-            var userId = Context.GetHttpContext().Request.Query["userId"].FirstOrDefault();
+            
+            var UserId = Context.GetHttpContext().Request.Headers["UserId"].ToString();
+            Console.WriteLine($"userid to {UserId}");
             var connectionId = Context.ConnectionId;
-            ConnectionUserMap[connectionId] = userId;
-            Console.WriteLine(ConnectionUserMap.Count);
-            /*
-           if (!string.IsNullOrWhiteSpace(userId) && userId != null)
-           {
+          
+            
+            
+            ConnectionUserMap[connectionId] = UserId;
+          
+         
 
-               var user = await _Context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-               user.IsOnline = true;
-               await _Context.SaveChangesAsync();
-               Console.WriteLine("zmiana statusu true");
-           }
+            foreach (var connection in ConnectionUserMap)
+            {
+                Console.WriteLine($" klucz {connection.Key} WARTOSC:{connection.Value}");
+            }
 
-           */
+             
+
+                /*
+               if (!string.IsNullOrWhiteSpace(userId) && userId != null)
+               {
+
+                   var user = await _Context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+                   user.IsOnline = true;
+                   await _Context.SaveChangesAsync();
+                   Console.WriteLine("zmiana statusu true");
+               }
+
+               */
 
 
-            await base.OnConnectedAsync();
+                await base.OnConnectedAsync();
 
-            Console.WriteLine("Start polaczenia");
+        
         }
         public Dictionary<string, string> GetConnectionUserMap()
         {

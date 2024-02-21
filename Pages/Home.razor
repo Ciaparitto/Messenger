@@ -91,6 +91,7 @@ else
 
 
         LoggedUser = await _UserService.GetLoggedUser();
+
         if(LoggedUser == null)
         {
             RedirectToPage("/Account/Login");
@@ -99,23 +100,39 @@ else
         {
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
             userId = LoggedUser.Id;
-        }
-        var url = $"https://localhost:7097/testhub?userId={userId}";
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(url)
-            .Build();
 
-        _hubConnection.StartAsync();
-
-        ConnectionsMap = _SignalManager.GetConnectionUserMap();
-      
-        foreach (var user in UserList)
+            var url = "https://localhost:7097/testhub";
+            _hubConnection = new HubConnectionBuilder()
+            .WithUrl(url, options =>
             {
-                foreach (var connection in ConnectionsMap)
+                options.Headers["UserId"] = userId;
+            })
+         .Build();
+            try
+            {
+                await _hubConnection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"Błąd podczas inicjowania połączenia: {ex.Message}");
+            }
+
+            ConnectionsMap = _SignalManager.GetConnectionUserMap();
+           
+        }
+       
+        foreach (var user in UserList)
+        {
+
+            foreach (var value in ConnectionsMap.Values)
+            {
+             
+                if (value == user.Id)
                 {
-                    if (connection.Value == user.Id)
-                    {
-                        OnlineFriendsList.Add(user);
+
+                    OnlineFriendsList.Add(user);
+                        Console.WriteLine("dodaje lolololololololol");
                       //nie dodaje nwm czemu
                     }
                 }
@@ -151,7 +168,7 @@ else
     {
         if (!firstRender)
         {
-            await _hubConnection.DisposeAsync();
+            await _hubConnection.DisposeAsync(); //to nie dziala
         }
     }
 }
