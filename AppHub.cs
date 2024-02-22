@@ -17,78 +17,19 @@ namespace messager
     public class AppHub :Hub
     {
         public static Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
-
-        private readonly AppDbContext _Context;
-        private readonly IUserService _UserService;
-       
-        public AppHub(AppDbContext context,IUserService userService)
-        {
-            _Context = context;
-            _UserService = userService;
-          
-            
-        }
-       
+             
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var connectionId = Context.ConnectionId;
-            var userId = ConnectionUserMap[connectionId];
-           
-            /*
-            if (!string.IsNullOrWhiteSpace(userId) && userId != null)
-            {
-
-                var user = await _Context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-                user.IsOnline = false;
-                await _Context.SaveChangesAsync();
-                Console.WriteLine("zmiana statusu flase");
-            }
-
-            */
+            var connectionId = Context.ConnectionId;     
             ConnectionUserMap.Remove(connectionId);
-            await base.OnDisconnectedAsync(exception);
-            Console.WriteLine(ConnectionUserMap.Count);
-            Console.WriteLine("koniec polaczenia");
+            await base.OnDisconnectedAsync(exception);         
         }
-
-        
         public override async Task OnConnectedAsync()
-        {
-
-            
+        {          
             var UserId = Context.GetHttpContext().Request.Headers["UserId"].ToString();
-            Console.WriteLine($"userid to {UserId}");
-            var connectionId = Context.ConnectionId;
-          
-            
-            
-            ConnectionUserMap[connectionId] = UserId;
-          
-         
-
-            foreach (var connection in ConnectionUserMap)
-            {
-                Console.WriteLine($" klucz {connection.Key} WARTOSC:{connection.Value}");
-            }
-
-             
-
-                /*
-               if (!string.IsNullOrWhiteSpace(userId) && userId != null)
-               {
-
-                   var user = await _Context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-                   user.IsOnline = true;
-                   await _Context.SaveChangesAsync();
-                   Console.WriteLine("zmiana statusu true");
-               }
-
-               */
-
-
-                await base.OnConnectedAsync();
-
-        
+            var connectionId = Context.ConnectionId;                            
+            ConnectionUserMap[connectionId] = UserId;        
+            await base.OnConnectedAsync();      
         }
         public Dictionary<string, string> GetConnectionUserMap()
         {
@@ -102,13 +43,7 @@ namespace messager
         {  
             await Clients.Groups(UserId).SendAsync("ReciveNotification", message);
                   
-        }
-        public async Task SendToAll(UserModel User)
-        {
-
-            await Clients.Groups("GlobalGroup").SendAsync("ReciveUserData", User);
-
-        }
+        }    
         public async Task JoinGroup(string UserId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, UserId);

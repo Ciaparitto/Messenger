@@ -90,16 +90,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-      
+
 
         Reciver = await _UserService.GetUserById(ReciverIdForm);
         user = await _UserService.GetLoggedUser();
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
-     
-        var url = $"https://localhost:7097/testhub?userId={user.Id}";
+
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(url)
-            .Build();
+           .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
+           {
+               options.Headers["UserId"] = user.Id;
+           })
+           .Build();
         _hubConnection.StartAsync();
         _hubConnection.On<string>("ReciveNotification", (message) =>
            {
@@ -110,12 +112,19 @@
            });
 
 
-           await _hubConnection.InvokeAsync("JoinGroup", user.Id);
+        await _hubConnection.InvokeAsync("JoinGroup", user.Id);
 
-         
+
         if(MessageList.Count == 0)
         {
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
+        }
+        foreach(var message in MessageList)
+        {
+            if(!message.IsRead)
+            {
+                message.IsRead = true;
+            }
         }
 
     }

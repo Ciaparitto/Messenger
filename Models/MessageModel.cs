@@ -22,6 +22,7 @@ namespace messager.models
 
         [ForeignKey("ReciverId")]
         public UserModel Reciver { get; set; }
+        public bool IsRead { get; set; }
     }
 
 

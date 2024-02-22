@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
+@implements IAsyncDisposable
 
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR
@@ -63,8 +64,6 @@
             }
         }
     </div>
-    
-  
 
 }
 else
@@ -73,22 +72,15 @@ else
 }
 @code{
     private string keyWords = "";
-    private string userId;
-    public string TEST;
-    private bool disposed = false;
-
     private List<UserModel> Users;
     private UserModel LoggedUser;
     private List<UserModel> UserList = new List<UserModel>();
-    private List<UserModel> OnlineFriendsList;
+    private List<UserModel> OnlineFriendsList = new List<UserModel>();
     private bool IsLogged;
     private HubConnection? _hubConnection;
-    public static Dictionary<string, string> ConnectionsMap;
+    private Dictionary<string, string> ConnectionsMap;
     protected override async Task OnInitializedAsync()
     {
-
-
-
 
         LoggedUser = await _UserService.GetLoggedUser();
 
@@ -99,49 +91,32 @@ else
         if (LoggedUser != null)
         {
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
-            userId = LoggedUser.Id;
 
             var url = "https://localhost:7097/testhub";
             _hubConnection = new HubConnectionBuilder()
-            .WithUrl(url, options =>
+            .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
             {
-                options.Headers["UserId"] = userId;
+                options.Headers["UserId"] = LoggedUser.Id;
             })
-         .Build();
-            try
-            {
-                await _hubConnection.StartAsync();
-            }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine($"Błąd podczas inicjowania połączenia: {ex.Message}");
-            }
+            .Build();
+            await _hubConnection.StartAsync();
 
             ConnectionsMap = _SignalManager.GetConnectionUserMap();
-           
+
         }
-       
+
         foreach (var user in UserList)
         {
-
             foreach (var value in ConnectionsMap.Values)
             {
-             
+
                 if (value == user.Id)
                 {
-
                     OnlineFriendsList.Add(user);
-                        Console.WriteLine("dodaje lolololololololol");
-                      //nie dodaje nwm czemu
-                    }
                 }
             }
-        
-
+        }
     }
-
-  
     private void RedirectToPage(string url)
     {
         Navigation.NavigateTo(url, forceLoad: true);
@@ -161,14 +136,11 @@ else
         }
         StateHasChanged();      
     }
-
-
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public async ValueTask DisposeAsync()
     {
-        if (!firstRender)
+        if (_hubConnection != null)
         {
-            await _hubConnection.DisposeAsync(); //to nie dziala
+            await _hubConnection.DisposeAsync();
         }
     }
 }
