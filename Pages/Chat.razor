@@ -24,7 +24,7 @@
 
 
 
-
+ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ikonka zmienia w nadawcy
    
    
     @if (Reciver != null && user != null)
@@ -42,35 +42,9 @@
 
        
 <div id="messageConatiner">
-         
-        @if (MessageList != null)
-        {
-            @foreach (var message in MessageList)
-            {
 
-                @if (message.CreatorId == user.Id)
-                {
-
-                AddMessageToView(AddBreakLines(message.Content), "creatorMessages", user.ProfileImageId.ToString(),"creatorImg");
-                    
-                }
-                else
-                {
-
-                AddMessageToView(AddBreakLines(message.Content), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
-                }
-                MessageListToRemove.Add(message);
-            }
-
-        }
-        @if (MessageListToRemove != null)
-        {
-            @foreach (var message in MessageListToRemove)
-            {
-                MessageList.Remove(message);
-            }
-        }
-    </div>
+   
+ </div>
     <input id="inputChat"type="text" name="Message" @bind="Message" />
     <button id="sendbutton" @onclick="() => SendMessage(Message,Reciver.Id)">napisz</button>
 
@@ -95,6 +69,8 @@
         Reciver = await _UserService.GetUserById(ReciverIdForm);
         user = await _UserService.GetLoggedUser();
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
+        await ReadMessages();
+        await GenerateMessages();
 
         _hubConnection = new HubConnectionBuilder()
            .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
@@ -103,27 +79,78 @@
            })
            .Build();
         _hubConnection.StartAsync();
+
         _hubConnection.On<string>("ReciveNotification", (message) =>
            {
-
-               AddMessageToView(AddBreakLines(message), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
+               //AddMessageToView(AddBreakLines(message), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
+               ReadAndGenerate();
                JSRuntime.InvokeVoidAsync("scrollToBottom");
-
+             
            });
 
+        _hubConnection.On("ReadMessages",async () =>
+            {
+                ReadAndGenerate();
+
+
+            });
 
         await _hubConnection.InvokeAsync("JoinGroup", user.Id);
-
+        await _hubConnection.InvokeAsync("ReadMessages", Reciver.Id);
 
         if(MessageList.Count == 0)
         {
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
         }
-        foreach(var message in MessageList)
+
+
+    }
+    private async Task ReadMessages()
+    {
+        var reciverMessages = MessageList.Where(x => x.ReciverId == Reciver.Id).ToList();
+        foreach (var message in reciverMessages)
         {
-            if(!message.IsRead)
+            if (!message.IsRead)
             {
                 message.IsRead = true;
+            }
+        }
+    }
+    private async Task GenerateMessages()
+    {
+        if (MessageList != null)
+        {
+            foreach (var message in MessageList)
+            {
+
+                if (message.CreatorId == user.Id)
+                {
+                    if(message.IsRead)
+                    {
+                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "6", "creatorImg"); // image with id 6 have readed message icon
+                    }
+                    else
+                    {
+                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "7", "creatorImg"); // image with id 7 have sended message icon
+                    }
+
+
+                }
+                else
+                {
+
+                    AddMessageToView(AddBreakLines(message.Content), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
+                }
+                //MessageListToRemove.Add(message);
+            }
+
+        }
+        
+        @if (MessageListToRemove != null)
+        {
+            @foreach (var message in MessageListToRemove)
+            {
+                MessageList.Remove(message);
             }
         }
 
@@ -139,6 +166,7 @@
     }
     private async Task AddMessageToView(string MessageContent, string MessClassName, string ProfileId,string ImgClassName )
     {
+      
         await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, MessClassName, ProfileId, ImgClassName);
     }
     private async Task SendMessage(string MessageContent, string ReciverId)
@@ -146,16 +174,26 @@
 
         if (!string.IsNullOrWhiteSpace(MessageContent) && MessageContent.Length < 512)
         {
-          
+
             _MessageService.AddMessage(MessageContent, ReciverId, user.Id);
             Message = "";
             await _hubConnection.InvokeAsync("SendMessage", MessageContent, Reciver.Id);
-            AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", user.ProfileImageId.ToString(), "creatorImg");
+            ReadAndGenerate();
+           // AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", "7", "creatorImg");
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
+
+
+            //await _hubConnection.InvokeAsync("ReadMessages", Reciver.Id);
+            //await ReadAndGenerate();
 
         }
 
 
+    }
+    public async Task ReadAndGenerate()
+    {
+        MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
+        await GenerateMessages();
     }
     public string AddBreakLines(string Message)
     {

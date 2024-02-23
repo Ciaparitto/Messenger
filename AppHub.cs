@@ -49,7 +49,9 @@ namespace messager
             await Groups.AddToGroupAsync(Context.ConnectionId, UserId);
             
         }
-    
-    
+        public async Task ReadMessages(string UserId)
+        {
+            await Clients.Groups(UserId).SendAsync("ReadMessages");
+        }    
     }
 }
