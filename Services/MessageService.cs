@@ -12,7 +12,7 @@ namespace messager.Services
             _Context = context;
         }
 
-        public async Task AddMessage(string messagecontent, string reciverid, string CreatorId)
+        public async Task<string> AddMessage(string messagecontent, string reciverid, string CreatorId)
         {
             var Message = new MessageModel
             {
@@ -23,6 +23,7 @@ namespace messager.Services
 
             await _Context.MessageList.AddAsync(Message);
             await _Context.SaveChangesAsync();
+            return Message.Id.ToString();
         }
         public async Task<List<MessageModel>> GetMessages(string CreatorId, string ReciverId)
         {

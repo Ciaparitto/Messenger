@@ -1,4 +1,4 @@
-function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClassNameImg)
+function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClassNameImg,MessageId)
 {
     var MessageImgContainer = document.createElement("div");
     var ImgContainer = document.createElement("div");
@@ -10,6 +10,7 @@ function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClass
 
     MessageContainerChild.className = "MessageContainerChild" + ElementClassNameMess;
     MessageImgContainer.className = ElementClassNameMess + "Container";
+  
     var MessageArea = document.getElementById("messageConatiner");
     MessageArea.appendChild(MessageImgContainer);
     MessageImgContainer.appendChild(MessageContainerChild);
@@ -22,6 +23,7 @@ function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClass
 
     var imgElement = document.createElement("img");
     imgElement.src = "/DisplayImage/" + ProfileId;
+    imgElement.id = MessageId;
     ImgContainer.className = ElementClassNameImg;
     imgElement.className = "photo";
  
@@ -36,4 +38,16 @@ function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClass
 function scrollToBottom() {
     var div = document.getElementById("messageConatiner");
     div.scrollTop = div.scrollHeight;
+}
+function RemoveChilds() {
+    var element = document.getElementById("messageConatiner");
+    
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    
+}
+function ChangePhoto(PhotoId, ProfileId) {
+    var photo = getElementById(PhotoId);
+    photo.src = "/DisplayImage/" + ProfileId;
 }

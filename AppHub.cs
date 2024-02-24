@@ -39,9 +39,9 @@ namespace messager
         {
             return Context.ConnectionId.ToString();
         }
-        public async Task SendMessage(string message,string UserId)
+        public async Task SendMessage(string message,string UserId,string MessageId)
         {  
-            await Clients.Groups(UserId).SendAsync("ReciveNotification", message);
+            await Clients.Groups(UserId).SendAsync("ReciveNotification", message, MessageId);
                   
         }    
         public async Task JoinGroup(string UserId)

@@ -24,7 +24,7 @@
 
 
 
-ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ikonka zmienia w nadawcy
+
    
    
     @if (Reciver != null && user != null)
@@ -71,7 +71,6 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
         await ReadMessages();
         await GenerateMessages();
-
         _hubConnection = new HubConnectionBuilder()
            .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
            {
@@ -80,23 +79,32 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
            .Build();
         _hubConnection.StartAsync();
 
-        _hubConnection.On<string>("ReciveNotification", (message) =>
+        _hubConnection.On<string, string>("ReciveNotification", async (message, MessageId) =>
            {
-               //AddMessageToView(AddBreakLines(message), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
-               ReadAndGenerate();
+               AddMessageToView(AddBreakLines(message), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg", MessageId);
+
                JSRuntime.InvokeVoidAsync("scrollToBottom");
-             
+               await _hubConnection.InvokeAsync("ReadMessages", Reciver.Id);
+
            });
 
         _hubConnection.On("ReadMessages",async () =>
             {
-                ReadAndGenerate();
 
-
+                //nie zmienia ikonki
+                var UnReadMessages = MessageList.Where(x => x.ReciverId == Reciver.Id && x.IsRead == false).ToList();
+                foreach (var message in UnReadMessages)
+                {
+                    if(!message.IsRead)
+                    {
+                        await JSRuntime.InvokeVoidAsync("ChangePhoto",message.Id,"3");
+                    }
+                }
             });
 
         await _hubConnection.InvokeAsync("JoinGroup", user.Id);
         await _hubConnection.InvokeAsync("ReadMessages", Reciver.Id);
+
 
         if(MessageList.Count == 0)
         {
@@ -107,17 +115,25 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
     }
     private async Task ReadMessages()
     {
-        var reciverMessages = MessageList.Where(x => x.ReciverId == Reciver.Id).ToList();
-        foreach (var message in reciverMessages)
+
+        var UnReadMessages = MessageList.Where(x => x.ReciverId == Reciver.Id && x.IsRead == false).ToList();
+        foreach (var message in UnReadMessages)
         {
             if (!message.IsRead)
             {
                 message.IsRead = true;
+                var Message = await _Context.MessageList.FindAsync(message.Id);
+                Message.IsRead = true;
+                await _Context.SaveChangesAsync();
+
             }
         }
+
     }
     private async Task GenerateMessages()
     {
+        MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
+        await JSRuntime.InvokeVoidAsync("RemoveChilds");
         if (MessageList != null)
         {
             foreach (var message in MessageList)
@@ -127,11 +143,11 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
                 {
                     if(message.IsRead)
                     {
-                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "6", "creatorImg"); // image with id 6 have readed message icon
+                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "6", "creatorImg", message.Id.ToString()); // image with id 6 have readed message icon
                     }
                     else
                     {
-                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "7", "creatorImg"); // image with id 7 have sended message icon
+                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "7", "creatorImg", message.Id.ToString()); // image with id 7 have sended message icon
                     }
 
 
@@ -139,7 +155,7 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
                 else
                 {
 
-                    AddMessageToView(AddBreakLines(message.Content), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg");
+                    AddMessageToView(AddBreakLines(message.Content), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg", message.Id.ToString());
                 }
                 //MessageListToRemove.Add(message);
             }
@@ -164,10 +180,10 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
             _hubConnection.DisposeAsync();
         }
     }
-    private async Task AddMessageToView(string MessageContent, string MessClassName, string ProfileId,string ImgClassName )
+    private async Task AddMessageToView(string MessageContent, string MessClassName, string ProfileId, string ImgClassName, string MessageId)
     {
-      
-        await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, MessClassName, ProfileId, ImgClassName);
+
+        await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, MessClassName, ProfileId, ImgClassName,MessageId);
     }
     private async Task SendMessage(string MessageContent, string ReciverId)
     {
@@ -175,17 +191,21 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
         if (!string.IsNullOrWhiteSpace(MessageContent) && MessageContent.Length < 512)
         {
 
-            _MessageService.AddMessage(MessageContent, ReciverId, user.Id);
+            var MessageId = await _MessageService.AddMessage(MessageContent, ReciverId, user.Id);
+      
             Message = "";
-            await _hubConnection.InvokeAsync("SendMessage", MessageContent, Reciver.Id);
-            ReadAndGenerate();
-           // AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", "7", "creatorImg");
+            await _hubConnection.InvokeAsync("SendMessage", MessageContent, Reciver.Id,MessageId);
+
+
+            AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", "7", "creatorImg", MessageId);
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
 
 
-            //await _hubConnection.InvokeAsync("ReadMessages", Reciver.Id);
-            //await ReadAndGenerate();
+            await _hubConnection.InvokeAsync("ReadMessages", Reciver.Id);
+      
+        
 
+          
         }
 
 
@@ -193,6 +213,9 @@ ogarnij wyswietlanie wiadomosci i to ze jak odbiorca wejdzie na strone to sie ik
     public async Task ReadAndGenerate()
     {
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
+        await JSRuntime.InvokeVoidAsync("RemoveChilds");
+
+        await ReadMessages();
         await GenerateMessages();
     }
     public string AddBreakLines(string Message)
