@@ -172,10 +172,9 @@
     float: left;
     margin: 0px 5px;
 }
-#username {
+username-Chat {
     float: left;
     margin: 0px;
-    
 }
 .ButtonLayOut{
     background-color: rgb(51,187,255);
@@ -198,4 +197,19 @@ margin: 0.5% 0.5% 0 0.5%;
 }
 #Home-button-container{
     float:left;
+}
+.UserList-Photo{
+    float:left;
+}
+.UserList-Button {
+    background-color: rgb(51,187,255);
+    padding: 10px;
+    margin: 0px 1%;
+    display: table;
+    border-radius: 15px;
+    border: none;
+    
+}
+.UserList-User{
+    margin:5px;
 }

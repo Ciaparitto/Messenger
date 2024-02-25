@@ -6,8 +6,8 @@
 {
 	<div id="loginconainer">
 	@Html.ValidationSummary()
-		<p>Podaj nazwe uzytkownika @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
-		<p>Podaj Haslo uzytkownika @Html.PasswordFor(x=> x.Password, new {@class = "inputlogin"})</p>
+		<p class="login-paragraph">Podaj nazwe uzytkownika @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
+		<p class="login-paragraph">Podaj Haslo uzytkownika @Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })</p>
 		<button id="Buttonlogin" type="submit">ZALOGUJ</button>
 	</div>
 	

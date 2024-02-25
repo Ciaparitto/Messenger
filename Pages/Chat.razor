@@ -35,7 +35,7 @@
         </div>
        <div id="ImgAndUsername">
         <img id="UserPhoto" src="@($"/DisplayImage/{Reciver.ProfileImageId}")" />
-        <h3 id="username">@Reciver.UserName</h3>
+        <h3 id="username-Chat">@Reciver.UserName</h3>
         </div>
     </div>
     }
@@ -91,14 +91,14 @@
         _hubConnection.On("ReadMessages",async () =>
             {
 
-                //nie zmienia ikonki
+              
+                MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
                 var UnReadMessages = MessageList.Where(x => x.ReciverId == Reciver.Id && x.IsRead == false).ToList();
                 foreach (var message in UnReadMessages)
                 {
-                    if(!message.IsRead)
-                    {
-                        await JSRuntime.InvokeVoidAsync("ChangePhoto",message.Id,"3");
-                    }
+                    
+                    await JSRuntime.InvokeVoidAsync("ChangePhoto", message.Id, "6");
+                    
                 }
             });
 
@@ -133,7 +133,6 @@
     private async Task GenerateMessages()
     {
         MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
-        await JSRuntime.InvokeVoidAsync("RemoveChilds");
         if (MessageList != null)
         {
             foreach (var message in MessageList)
@@ -157,19 +156,11 @@
 
                     AddMessageToView(AddBreakLines(message.Content), "reciverMessages", Reciver.ProfileImageId.ToString(), "reciverImg", message.Id.ToString());
                 }
-                //MessageListToRemove.Add(message);
+
             }
 
         }
-        
-        @if (MessageListToRemove != null)
-        {
-            @foreach (var message in MessageListToRemove)
-            {
-                MessageList.Remove(message);
-            }
-        }
-
+     
     }
     public async ValueTask DisposeAsync()
     {
@@ -210,14 +201,7 @@
 
 
     }
-    public async Task ReadAndGenerate()
-    {
-        MessageList = await _MessageService.GetMessages(user.Id, Reciver.Id);
-        await JSRuntime.InvokeVoidAsync("RemoveChilds");
 
-        await ReadMessages();
-        await GenerateMessages();
-    }
     public string AddBreakLines(string Message)
     {
         var MessageWithBreakLines = "";

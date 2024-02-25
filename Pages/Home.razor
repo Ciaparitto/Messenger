@@ -22,17 +22,20 @@
 @if (LoggedUser != null)
 {
       <div id="LastedMessages">
-        <p>ostatnie wiadomosci:</p>
+        <h2>ostatnie wiadomosci</h2>
         @if (UserList != null && UserList.Count != 0)
         {
             @foreach (var user in UserList)
             {
-                <button class="ButtonLayOut" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                <div class="UserList-User">
+                    <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                    <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                </div>
             }
         }
     </div>
     <div class="pickuser">
-        <h2>znajdz znajomych  </h2>
+        <h1>znajdz znajomych  </h1>
 
         <div class="input">
             <input id="inputSearch" type="text" @bind="keyWords" />
@@ -46,8 +49,10 @@
 
                 if (user.Id != LoggedUser.Id)
                 {
-                    <br />
-                    <button class="ButtonLayOut" @onclick="@(() => RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                    <div class="UserList-User">
+                        <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                    </div>
                 }
             }
                      
@@ -60,7 +65,11 @@
         {
             @foreach (var user in OnlineFriendsList)
             {
-                <button class="ButtonLayOut" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+
+                <div class="UserList-User">
+                    <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                    <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                </div>
             }
         }
     </div>
@@ -92,7 +101,6 @@ else
         {
             UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
 
-            var url = "https://localhost:7097/testhub";
             _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
             {
@@ -100,22 +108,17 @@ else
             })
             .Build();
             await _hubConnection.StartAsync();
-
-            ConnectionsMap = _SignalManager.GetConnectionUserMap();
-
-        }
-
-        foreach (var user in UserList)
-        {
-            foreach (var value in ConnectionsMap.Values)
+            GetOnlineFriends();
+            while(true)
             {
-
-                if (value == user.Id)
-                {
-                    OnlineFriendsList.Add(user);
-                }
+                await Task.Delay(TimeSpan.FromSeconds(3));
+                GetOnlineFriends();
+                StateHasChanged();
+          
             }
         }
+
+
     }
     private void RedirectToPage(string url)
     {
@@ -141,6 +144,25 @@ else
         if (_hubConnection != null)
         {
             await _hubConnection.DisposeAsync();
+        }
+    }
+
+    public async Task GetOnlineFriends()
+    {
+        ConnectionsMap = _SignalManager.GetConnectionUserMap();
+  
+        foreach (var user in UserList)
+        {
+          
+            if (ConnectionsMap.ContainsValue(user.Id) && !OnlineFriendsList.Contains(user))
+            {
+                OnlineFriendsList.Add(user);
+            }
+            if (!ConnectionsMap.Values.Contains(user.Id) && OnlineFriendsList.Contains(user))
+            {
+                OnlineFriendsList.Remove(user);
+            }
+            
         }
     }
 }

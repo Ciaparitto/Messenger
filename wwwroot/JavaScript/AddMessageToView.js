@@ -39,15 +39,8 @@ function scrollToBottom() {
     var div = document.getElementById("messageConatiner");
     div.scrollTop = div.scrollHeight;
 }
-function RemoveChilds() {
-    var element = document.getElementById("messageConatiner");
-    
-        while (element.firstChild) {
-            element.removeChild(element.firstChild);
-        }
-    
-}
+
 function ChangePhoto(PhotoId, ProfileId) {
-    var photo = getElementById(PhotoId);
-    photo.src = "/DisplayImage/" + ProfileId;
+    var photo = document.getElementById(PhotoId);
+    photo.src = "/DisplayImage/" + ProfileId;  
 }
