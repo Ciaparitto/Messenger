@@ -109,13 +109,7 @@ else
             .Build();
             await _hubConnection.StartAsync();
             GetOnlineFriends();
-            while(true)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(3));
-                GetOnlineFriends();
-                StateHasChanged();
-          
-            }
+           
         }
 
 
@@ -149,20 +143,30 @@ else
 
     public async Task GetOnlineFriends()
     {
-        ConnectionsMap = _SignalManager.GetConnectionUserMap();
-  
-        foreach (var user in UserList)
+        while (true)
         {
-          
-            if (ConnectionsMap.ContainsValue(user.Id) && !OnlineFriendsList.Contains(user))
+            await Task.Delay(TimeSpan.FromSeconds(20));
+
+            ConnectionsMap = _SignalManager.GetConnectionUserMap();
+
+            foreach (var user in UserList)
             {
-                OnlineFriendsList.Add(user);
+
+                if (ConnectionsMap.ContainsValue(user.Id) && !OnlineFriendsList.Contains(user))
+                {
+                    OnlineFriendsList.Add(user);
+                }
+                if (!ConnectionsMap.Values.Contains(user.Id) && OnlineFriendsList.Contains(user))
+                {
+                    OnlineFriendsList.Remove(user);
+                }
+
             }
-            if (!ConnectionsMap.Values.Contains(user.Id) && OnlineFriendsList.Contains(user))
-            {
-                OnlineFriendsList.Remove(user);
-            }
-            
+
+
+            StateHasChanged();
+
         }
+       
     }
 }

@@ -2,6 +2,7 @@
 	<link href="~/css/style.css" rel="stylesheet"/>
 </head>
 @model messager.models.Login
+<div id="LoginAndRedirect-Container">
 @using(Html.BeginForm("Login","Account", FormMethod.Post))
 {
 	<div id="loginconainer">
@@ -10,6 +11,9 @@
 		<p class="login-paragraph">Podaj Haslo uzytkownika @Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })</p>
 		<button id="Buttonlogin" type="submit">ZALOGUJ</button>
 	</div>
-	
-	
 }
+	<div id="RedirectDiv">
+		<h3>jesli jeszcze nie masz konta to zarejestruj sie</h3>
+		@Html.ActionLink("ZAREJESTRUJ", "Register", "Account", null, new { @class = "Button-Redirect" })
+	</div>
+</div>
