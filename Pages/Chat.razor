@@ -18,20 +18,15 @@
 @implements IAsyncDisposable
 @inject SignalRManager _SignalManager;
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Chat</PageTitle>
 
 <link href="css/style.css" rel="stylesheet">
 
-
-
-
-   
-   
     @if (Reciver != null && user != null)
     {
     <div id="ReciverInfo">
         <div id="Home-button-container">
-            <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Strona Glowna</button>
+            <button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Main Page</button>
         </div>
        <div id="ImgAndUsername">
         <img id="UserPhoto" src="@($"/DisplayImage/{Reciver.ProfileImageId}")" />
@@ -41,14 +36,13 @@
     }
 
        
-<div id="messageConatiner">
-
-   
+<div id="messageConatiner">  
  </div>
-    <input id="inputChat"type="text" name="Message" @bind="Message" />
-    <button id="sendbutton" @onclick="() => SendMessage(Message,Reciver.Id)">napisz</button>
-
-
+ <div id="sendbutton-container">
+    <input id="inputChat" type="text" name="Message" @bind="Message" />
+    <button id="sendbutton" @onclick="() => SendMessage(Message,Reciver.Id)">Write</button>
+ </div>
+ 
 @code {
     public string imageSrc = "";
     public string Message { get; set; } = "";

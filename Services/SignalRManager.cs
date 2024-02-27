@@ -13,15 +13,13 @@ namespace messager.Services
 {
     public class SignalRManager
     {
-        private Dictionary<string, string> connectionUserMap;
-        private readonly IHubContext<AppHub> _HubContext;
+
         public HubConnection? hubConnection { get; private set; }
      
-        public SignalRManager(IHubContext<AppHub> hubContext)
+        public SignalRManager()
         {
 
-           
-            _HubContext = hubContext;
+       
             var user = GetUser();
             var userId = user.Id;
 

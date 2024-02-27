@@ -7,20 +7,20 @@
 {
 	<div id="registerContainer">
 		@Html.ValidationSummary()
-		<p>Podaj nazwe uzytkownika @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
-		<p>Podaj Email uzytkownika @Html.TextBoxFor(x=> x.EmailAdress, new {@class = "inputlogin"})</p>
-		<p>Podaj Haslo uzytkownika @Html.PasswordFor(x=> x.Password, new {@class = "inputlogin"})</p>
+		<p>Username @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
+		<p>Email adress @Html.TextBoxFor(x=> x.EmailAdress, new {@class = "inputlogin"})</p>
+		<p>Password @Html.PasswordFor(x=> x.Password, new {@class = "inputlogin"})</p>
 		<p>
 			dodaj zdjecia <input class="customfiles" type="file" id="customfiles" name="files" multiple />
-			<label id="customfilelabel" for="customfiles">Wybierz pliki</label>
+			<label id="customfilelabel" for="customfiles">Choose file</label>
 		</p>
-		<button id="ButtonRegister" type="submit">ZAREJESTRUJ</button>
+		<button id="ButtonRegister" type="submit">SIGN UP</button>
 	</div>
 
 
 }
 	<div id="RedirectDiv">
-		<h3>jesli masz konto to zaloguj sie</h3>
-		@Html.ActionLink("ZALOGUJ", "Login", "Account", null, new { @class = "Button-Redirect" })
+		<h3>If you have account </h3>
+		@Html.ActionLink("LOGIN", "Login", "Account", null, new { @class = "Button-Redirect" })
 	</div>
 </div>

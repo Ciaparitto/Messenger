@@ -1,5 +1,4 @@
-﻿using messager.Signal.Shared;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using messager;
 using Microsoft.EntityFrameworkCore;

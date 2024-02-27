@@ -21,8 +21,8 @@
 <link href="css/style.css" rel="stylesheet">
 @if (LoggedUser != null)
 {
-      <div id="LastedMessages">
-        <h2>ostatnie wiadomosci</h2>
+      <div id="LastetMessages">
+        <h2>Lastet messages</h2>
         @if (UserList != null && UserList.Count != 0)
         {
             @foreach (var user in UserList)
@@ -35,11 +35,11 @@
         }
     </div>
     <div class="pickuser">
-        <h1>znajdz znajomych  </h1>
+        <h1>Find friends</h1>
 
         <div class="input">
             <input id="inputSearch" type="text" @bind="keyWords" />
-            <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">szukaj</button>
+            <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">Find</button>
         </div>
 
         @if (Users != null && Users.Count != 0)
@@ -60,7 +60,7 @@
        
     </div>
     <div id="FrirendOnline">
-        <h2>twoi znajomi online</h2>
+        <h2>Your online friends</h2>
         @if (OnlineFriendsList != null && OnlineFriendsList.Count != 0)
         {
             @foreach (var user in OnlineFriendsList)
@@ -75,10 +75,7 @@
     </div>
 
 }
-else
-{
-   <h1>loading</h1>
-}
+
 @code{
     private string keyWords = "";
     private List<UserModel> Users;
