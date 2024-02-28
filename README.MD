@@ -3,6 +3,9 @@
 ### This is an application for people who want to stay in touch with friend 
 #
 ## Technology list
-### - ASPCORE.NET
+### - C#
+### - ASP.NET Core
+### - ASP.NET Core MVC
 ### - EntityFramework
+### - Blazor
 ### - SignalR

@@ -7,12 +7,22 @@
 {
 	<div id="registerContainer">
 		@Html.ValidationSummary()
-		<p>Username @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
-		<p>Email adress @Html.TextBoxFor(x=> x.EmailAdress, new {@class = "inputlogin"})</p>
-		<p>Password @Html.PasswordFor(x=> x.Password, new {@class = "inputlogin"})</p>
+		<p class="info-paragraph">
+			<span>Username</span>
+			<br />
+			@Html.TextBoxFor(x => x.UserName, new { @class = "inputlogin" })</p>
+		<p class="info-paragraph">
+			<span>Email Adress</span>
+			<br />
+			@Html.TextBoxFor(x => x.EmailAdress, new { @class = "inputlogin" })</p>	
+		<p class="info-paragraph">
+			<span>Password</span>
+			<br />
+			@Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })</p>
 		<p>
-			dodaj zdjecia <input class="customfiles" type="file" id="customfiles" name="files" multiple />
-			<label id="customfilelabel" for="customfiles">Choose file</label>
+			
+			<input class="customfiles" type="file" id="customfiles" name="files" multiple />
+			<label id="customfilelabel" for="customfiles">Choose Photo</label>
 		</p>
 		<button id="ButtonRegister" type="submit">SIGN UP</button>
 	</div>

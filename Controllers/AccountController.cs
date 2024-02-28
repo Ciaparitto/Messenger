@@ -73,13 +73,9 @@ namespace messager.Controllers
                             }
                         }
                     }
-                }
-               
-                
-                else
-                {
-                    Console.WriteLine("nie dziala");
-                }
+                }else{ 					
+				NewUser.ProfileImageId = 1;					
+				}
 				await _signInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
 			
 				return RedirectToAction("Index", "Home");

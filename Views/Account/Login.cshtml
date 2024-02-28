@@ -7,14 +7,14 @@
 {
 	<div id="loginconainer">
 	@Html.ValidationSummary()
-	dodaj style dla alertow przy braku validacji i wysrdokuj formularz rejestracji
-		<p class="login-paragraph">Username @Html.TextBoxFor(x=> x.UserName, new {@class = "inputlogin"})</p>
-		<p class="login-paragraph">Password @Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })</p>
-		<button id="Buttonlogin" type="submit">LOGIN</button>
+	<p class="login-paragraph"><span>Username</span> @Html.TextBoxFor(x => x.UserName, new { @class = "inputlogin" })</p>
+	<p class="login-paragraph"><span>Password</span> @Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })</p>
+	<button id="Buttonlogin" type="submit">LOGIN</button>
 	</div>
 }
 	<div id="RedirectDiv">
 		<h3>if you dont have account</h3>
 		@Html.ActionLink("SIGN UP", "Register", "Account", null, new { @class = "Button-Redirect" })
 	</div>
-</div> 
+	
+</div>
