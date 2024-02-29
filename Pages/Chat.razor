@@ -71,7 +71,7 @@
                options.Headers["UserId"] = user.Id;
            })
            .Build();
-        _hubConnection.StartAsync();
+        await _hubConnection.StartAsync();
 
         _hubConnection.On<string, string>("ReciveNotification", async (message, MessageId) =>
            {
@@ -92,6 +92,9 @@
                 {
                     
                     await JSRuntime.InvokeVoidAsync("ChangePhoto", message.Id, "6");
+                    var Message = await _Context.MessageList.FindAsync(message.Id);
+                    Message.IsRead = true;
+                    await _Context.SaveChangesAsync();
                     
                 }
             });
@@ -110,7 +113,7 @@
     private async Task ReadMessages()
     {
 
-        var UnReadMessages = MessageList.Where(x => x.ReciverId == Reciver.Id && x.IsRead == false).ToList();
+        var UnReadMessages = MessageList.Where(x => x.ReciverId == user.Id && x.IsRead == false).ToList();
         foreach (var message in UnReadMessages)
         {
             if (!message.IsRead)
@@ -187,7 +190,7 @@
 
 
             await _hubConnection.InvokeAsync("ReadMessages", Reciver.Id);
-      
+            await _hubConnection.InvokeAsync("ChangeMessageNotification", Reciver.Id);
         
 
           

@@ -17,10 +17,12 @@
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
 @inject SignalRManager _SignalManager;
+@inject IMessageService _MessageService;
 
 <link href="css/style.css" rel="stylesheet">
 @if (LoggedUser != null)
 {
+    zrob zeby zmienialo kolenosc userow moze czas wiadomosci i sort by wadomosc.czas DESC
       <div id="LastetMessages">
         <h2>Lastet messages</h2>
         @if (UserList != null && UserList.Count != 0)
@@ -28,13 +30,24 @@
             @foreach (var user in UserList)
             {
                 <div class="UserList-User">
-                    <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                    <div class="UserList-PhotoContainer">
+                    @if (UnreadMessageCounts.ContainsKey(user.Id) && UnreadMessageCounts[user.Id] != 0)
+                    {
+                        <span class="UnreadMessagesNotification">@UnreadMessageCounts[user.Id]</span>
+                     <img class="UserList-PhotoWithNotification" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                        }
+                        else
+                        {
+                            <img class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                        }
+
+                    </div>
                     <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
                 </div>
             }
         }
     </div>
-    <div class="pickuser">
+	<div class="pickuser">
         <h1>Find friends</h1>
 
         <div class="input">
@@ -85,30 +98,38 @@
     private bool IsLogged;
     private HubConnection? _hubConnection;
     private Dictionary<string, string> ConnectionsMap;
+    private Dictionary<string, int> UnreadMessageCounts = new Dictionary<string, int>();
     protected override async Task OnInitializedAsync()
     {
 
         LoggedUser = await _UserService.GetLoggedUser();
-
-        if(LoggedUser == null)
+        if (LoggedUser == null)
         {
             RedirectToPage("/Account/Login");
         }
-        if (LoggedUser != null)
+        UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
+
+        _hubConnection = new HubConnectionBuilder()
+        .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
         {
-            UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
+            options.Headers["UserId"] = LoggedUser.Id;
+        })
+        .Build();
 
-            _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
-            {
-                options.Headers["UserId"] = LoggedUser.Id;
-            })
-            .Build();
-            await _hubConnection.StartAsync();
-            GetOnlineFriends();
-           
-        }
+        await _hubConnection.StartAsync();
 
+        await _hubConnection.InvokeAsync("JoinGroup", LoggedUser.Id);
+        _hubConnection.On("ChangeMessageNotification", async () =>
+        {
+            await ChangeMessageNotification();
+            StateHasChanged();
+        });
+
+     
+        await ChangeMessageNotification();
+       
+      
+   
 
     }
     private void RedirectToPage(string url)
@@ -142,7 +163,7 @@
     {
         while (true)
         {
-            await Task.Delay(TimeSpan.FromSeconds(20));
+        
 
             ConnectionsMap = _SignalManager.GetConnectionUserMap();
 
@@ -162,8 +183,21 @@
 
 
             StateHasChanged();
-
+            await Task.Delay(TimeSpan.FromSeconds(20));
         }
-       
+
+    }
+    private async Task<int> CountUnreadMessages(UserModel User)
+    {
+        var UnreadMessages = await _MessageService.GetMessages(LoggedUser.Id, User.Id);
+        UnreadMessages = UnreadMessages.Where(x => x.IsRead == false && x.CreatorId == User.Id).ToList();
+        return UnreadMessages.Count;
+    }
+    private async Task ChangeMessageNotification()
+    {
+        foreach (var user in UserList)
+        {
+            UnreadMessageCounts[user.Id] = await CountUnreadMessages(user);
+        }
     }
 }

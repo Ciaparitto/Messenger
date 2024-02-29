@@ -182,13 +182,7 @@
 .creatorMessagesContainer, .reciverMessagesContainer {
     margin: 10px 0px;
 }
-#UserPhoto {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    float: left;
-    margin: 0px 5px;
-}
+
 #username-Chat {
     float: left; 
 }
@@ -218,17 +212,15 @@
     float: left;
     margin: 0.5%;
 }
-.UserList-Photo{
-    float:left;
-}
+
+
 .UserList-Button, .Button-Redirect {
     background-color: rgb(51,187,255);
     padding: 10px;
-    margin: 0px 1%;
     display: table;
     border-radius: 15px;
     border: none;
-    text-align:center;
+    text-align: center;
 }
 .UserList-User {
         margin: 5px;
@@ -284,4 +276,43 @@ ul {
 }
 .login-paragraph {
     text-align: center;
+}
+.UnreadMessagesNotification {
+    background-color: red;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    line-height: 25px;
+    text-align: center;
+    border-radius: 100%;
+    position: relative;
+    bottom: 5px;
+    right: 15px;
+    font-size: 12px;
+    z-index: 1;
+}
+.UserList-PhotoContainer {
+    position: relative;
+    float:left;
+ 
+}
+
+.UserList-Photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    margin-right: 25px;
+    float: left;
+}
+#UserPhoto {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    float: left;
+}
+.UserList-PhotoWithNotification {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    float: left;
 }

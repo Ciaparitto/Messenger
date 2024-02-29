@@ -53,5 +53,9 @@ namespace messager
         {
             await Clients.Groups(UserId).SendAsync("ReadMessages");
         }    
+        public async Task ChangeMessageNotification(string UserId)
+        {
+            await Clients.Groups(UserId).SendAsync("ChangeMessageNotification");
+        }
     }
 }
