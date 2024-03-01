@@ -20,9 +20,10 @@
 @inject IMessageService _MessageService;
 
 <link href="css/style.css" rel="stylesheet">
+napraw dlugosc nazwy usera
 @if (LoggedUser != null)
 {
-    zrob zeby zmienialo kolenosc userow moze czas wiadomosci i sort by wadomosc.czas DESC
+
       <div id="LastetMessages">
         <h2>Lastet messages</h2>
         @if (UserList != null && UserList.Count != 0)
@@ -107,29 +108,35 @@
         {
             RedirectToPage("/Account/Login");
         }
-        UserList = await Http.GetFromJsonAsync<List<UserModel>>($"api/Messenger/GetUsers?creatorId={LoggedUser.Id}");
-
-        _hubConnection = new HubConnectionBuilder()
-        .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
+        else
         {
-            options.Headers["UserId"] = LoggedUser.Id;
-        })
-        .Build();
 
-        await _hubConnection.StartAsync();
 
-        await _hubConnection.InvokeAsync("JoinGroup", LoggedUser.Id);
-        _hubConnection.On("ChangeMessageNotification", async () =>
-        {
+            
+            UserList = await _UserService.GetUsers(LoggedUser.Id);
+            _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
+            {
+                options.Headers["UserId"] = LoggedUser.Id;
+            })
+            .Build();
+
+            await _hubConnection.StartAsync();
+
+            await _hubConnection.InvokeAsync("JoinGroup", LoggedUser.Id);
+            _hubConnection.On("ChangeMessageNotification", async () =>
+            {
+            
+                await ChangeMessageNotification();
+                UserList = await _UserService.GetUsers(LoggedUser.Id);
+                StateHasChanged();
+            });
+
+
             await ChangeMessageNotification();
-            StateHasChanged();
-        });
 
-     
-        await ChangeMessageNotification();
-       
-      
-   
+        }
+
 
     }
     private void RedirectToPage(string url)

@@ -29,7 +29,7 @@ namespace messager.Controllers
         {
             return View();
         }
-
+        [HttpPost]
         public async Task<IActionResult> Register(Register UserData, List<IFormFile> files)
         {
 
@@ -73,9 +73,12 @@ namespace messager.Controllers
                             }
                         }
                     }
-                }else{ 					
-				NewUser.ProfileImageId = 1;					
-				}
+                    else
+                    {
+                        NewUser.ProfileImageId = 1;
+                        _Context.SaveChanges();
+                    }
+                }
 				await _signInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
 			
 				return RedirectToAction("Index", "Home");

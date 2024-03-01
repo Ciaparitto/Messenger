@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +24,7 @@ namespace messager.models
         [ForeignKey("ReciverId")]
         public UserModel Reciver { get; set; }
         public bool IsRead { get; set; }
+        public DateTime SendTime { private set; get; } = DateTime.Now;
     }
 
 

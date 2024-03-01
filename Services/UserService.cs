@@ -51,32 +51,32 @@ namespace messager.Services
             }
             return null;
         }
-
-        public async Task<UserModel> GetLoggedUser2()
-        {
-            var _User = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-            if (_User != null)
-            {
-                return _User;
-            }
-            return null;
-        }
         public async Task<UserModel> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             return user;
-        }
-        public async Task<List<UserModel>> GetUsersByIds(IEnumerable<string> userIds)
-        {
-            return await _userManager.Users.Where(user => userIds.Contains(user.Id)).ToListAsync();
-        }
-
+        }    
         public async Task<List<UserModel>> GetUsers(string CreatorId)
         {              
-            var MessageList = await _MessageService.GetMessages(CreatorId);
-            var _User = GetLoggedUser();
-            HashSet<string> UserIds = new HashSet<string>(MessageList.Select(msg => msg.ReciverId));
-            var UserList = await GetUsersByIds(UserIds);
+            var MessageList = await _MessageService.GetMessagesByCreator(CreatorId);
+            MessageList = MessageList.Concat(await _MessageService.GetMessagesByReceiver(CreatorId)).ToList();
+            var GroupedMessageList = MessageList.GroupBy(msg => msg.CreatorId);
+            GroupedMessageList = GroupedMessageList.Concat(MessageList.GroupBy(msg => msg.ReciverId));
+			var OrderedGroupedMessageList = GroupedMessageList.OrderBy(group => group.Max(msg => msg.SendTime));
+           
+
+            var Ids = OrderedGroupedMessageList.Select(group => group.Key).ToList();
+            Ids.Reverse();
+            var UserList = new List<UserModel>();
+            foreach(var id in  Ids)
+            {
+                if(!(id == CreatorId) && !UserList.Contains(await GetUserById(id)))
+                {
+                    UserList.Add(await GetUserById(id));
+                }
+            
+
+            }       
             return UserList;                           
         }
     }

@@ -34,9 +34,13 @@ namespace messager.Services
 
             return Messages;
         }
-        public async Task<List<MessageModel>> GetMessages(string CreatorId)
+        public async Task<List<MessageModel>> GetMessagesByCreator(string CreatorId)
         {
         return await _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToListAsync();           
+        }
+        public async Task<List<MessageModel>> GetMessagesByReceiver(string ReceiverId)
+        {
+            return await _Context.MessageList.Where(x => x.ReciverId == ReceiverId).ToListAsync();
         }
     }
 }
