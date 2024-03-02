@@ -91,7 +91,7 @@
                 foreach (var message in UnReadMessages)
                 {
                     
-                    await JSRuntime.InvokeVoidAsync("ChangePhoto", message.Id, "6");
+                    await JSRuntime.InvokeVoidAsync("ChangePhoto", message.Id, "14");
                     var Message = await _Context.MessageList.FindAsync(message.Id);
                     Message.IsRead = true;
                     await _Context.SaveChangesAsync();
@@ -113,7 +113,7 @@
     private async Task ReadMessages()
     {
 
-        var UnReadMessages = MessageList.Where(x => x.ReciverId == user.Id && x.IsRead == false).ToList();
+        var UnReadMessages = MessageList.Where(x => x.ReciverId == Reciver.Id && x.IsRead == false).ToList();
         foreach (var message in UnReadMessages)
         {
             if (!message.IsRead)
@@ -139,11 +139,11 @@
                 {
                     if(message.IsRead)
                     {
-                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "6", "creatorImg", message.Id.ToString()); // image with id 6 have readed message icon
+                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "14", "creatorImg", message.Id.ToString()); // image with id 6 have readed message icon
                     }
                     else
                     {
-                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "7", "creatorImg", message.Id.ToString()); // image with id 7 have sended message icon
+                        AddMessageToView(AddBreakLines(message.Content), "creatorMessages", "13", "creatorImg", message.Id.ToString()); // image with id 13h ave sended message icon
                     }
 
 
@@ -185,7 +185,7 @@
             await _hubConnection.InvokeAsync("SendMessage", MessageContent, Reciver.Id,MessageId);
 
 
-            AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", "7", "creatorImg", MessageId);
+            AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", "13", "creatorImg", MessageId);
             await JSRuntime.InvokeVoidAsync("scrollToBottom");
 
 

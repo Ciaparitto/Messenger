@@ -20,7 +20,8 @@
 @inject IMessageService _MessageService;
 
 <link href="css/style.css" rel="stylesheet">
-napraw dlugosc nazwy usera
+<PageTitle>Home</PageTitle>
+
 @if (LoggedUser != null)
 {
 
@@ -35,15 +36,23 @@ napraw dlugosc nazwy usera
                     @if (UnreadMessageCounts.ContainsKey(user.Id) && UnreadMessageCounts[user.Id] != 0)
                     {
                         <span class="UnreadMessagesNotification">@UnreadMessageCounts[user.Id]</span>
-                     <img class="UserList-PhotoWithNotification" src="@($"/DisplayImage/{user.ProfileImageId}")" />
-                        }
-                        else
-                        {
-                            <img class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
-                        }
+                        <img class="UserList-PhotoWithNotification" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                    }
+                    else
+                    {
+                         <img class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                    }
 
                     </div>
-                    <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                    @if (user.UserName.Length > 20)
+                    {
+                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName.Substring(0, 20)......</button>
+                    }
+                    else
+                    {
+                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                    }
+
                 </div>
             }
         }
@@ -64,8 +73,19 @@ napraw dlugosc nazwy usera
                 if (user.Id != LoggedUser.Id)
                 {
                     <div class="UserList-User">
-                        <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
-                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                        <div class="FindUser-PhotoContainer">
+                            <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                        </div>
+
+                        @if (user.UserName.Length > 20)
+                        {
+                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName.Substring(0, 20)......</button>
+                        }
+                        else
+                        {
+                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                        }
+
                     </div>
                 }
             }
@@ -96,7 +116,6 @@ napraw dlugosc nazwy usera
     private UserModel LoggedUser;
     private List<UserModel> UserList = new List<UserModel>();
     private List<UserModel> OnlineFriendsList = new List<UserModel>();
-    private bool IsLogged;
     private HubConnection? _hubConnection;
     private Dictionary<string, string> ConnectionsMap;
     private Dictionary<string, int> UnreadMessageCounts = new Dictionary<string, int>();
@@ -109,10 +128,7 @@ napraw dlugosc nazwy usera
             RedirectToPage("/Account/Login");
         }
         else
-        {
-
-
-            
+        { 
             UserList = await _UserService.GetUsers(LoggedUser.Id);
             _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
@@ -126,7 +142,7 @@ napraw dlugosc nazwy usera
             await _hubConnection.InvokeAsync("JoinGroup", LoggedUser.Id);
             _hubConnection.On("ChangeMessageNotification", async () =>
             {
-            
+
                 await ChangeMessageNotification();
                 UserList = await _UserService.GetUsers(LoggedUser.Id);
                 StateHasChanged();
@@ -134,6 +150,7 @@ napraw dlugosc nazwy usera
 
 
             await ChangeMessageNotification();
+            await GetOnlineFriends();
 
         }
 
@@ -169,9 +186,7 @@ napraw dlugosc nazwy usera
     public async Task GetOnlineFriends()
     {
         while (true)
-        {
-        
-
+        {        
             ConnectionsMap = _SignalManager.GetConnectionUserMap();
 
             foreach (var user in UserList)
@@ -187,10 +202,10 @@ napraw dlugosc nazwy usera
                 }
 
             }
-
-
             StateHasChanged();
-            await Task.Delay(TimeSpan.FromSeconds(20));
+            await Task.Delay(TimeSpan.FromSeconds(2));
+         
+
         }
 
     }
