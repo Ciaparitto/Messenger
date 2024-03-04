@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿﻿
+@page "/"
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
 @implements IAsyncDisposable
@@ -11,13 +12,12 @@
 @using messager.Services.Interfaces;
 @using messager.models;
 @using Microsoft.EntityFrameworkCore;
-@inject AppDbContext _Context;
-@inject HttpClient Http
+
 @inject NavigationManager Navigation
 @inject UserManager<UserModel> _userManager
 @inject IUserService _UserService
-@inject SignalRManager _SignalManager;
-@inject IMessageService _MessageService;
+@inject SignalRManager _SignalManager
+@inject IMessageService _MessageService
 
 <link href="css/style.css" rel="stylesheet">
 <PageTitle>Home</PageTitle>
@@ -29,28 +29,28 @@
         <h2>Lastet messages</h2>
         @if (UserList != null && UserList.Count != 0)
         {
-            @foreach (var user in UserList)
+            @foreach (var User in UserList)
             {
                 <div class="UserList-User">
                     <div class="UserList-PhotoContainer">
-                    @if (UnreadMessageCounts.ContainsKey(user.Id) && UnreadMessageCounts[user.Id] != 0)
+                    @if (UnreadMessageCounts.ContainsKey(User.Id) && UnreadMessageCounts[User.Id] != 0)
                     {
-                        <span class="UnreadMessagesNotification">@UnreadMessageCounts[user.Id]</span>
-                        <img class="UserList-PhotoWithNotification" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                        <span class="UnreadMessagesNotification">@UnreadMessageCounts[User.Id]</span>
+                        <img class="UserList-PhotoWithNotification" src="@($"/DisplayImage/{User.ProfileImageId}")" />
                     }
                     else
                     {
-                         <img class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                         <img class="UserList-Photo" src="@($"/DisplayImage/{User.ProfileImageId}")" />
                     }
 
                     </div>
-                    @if (user.UserName.Length > 20)
+                    @if (User.UserName.Length > 20)
                     {
-                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName.Substring(0, 20)......</button>
+                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName.Substring(0, 20)......</button>
                     }
                     else
                     {
-                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName</button>
                     }
 
                 </div>
@@ -61,29 +61,29 @@
         <h1>Find friends</h1>
 
         <div class="input">
-            <input id="inputSearch" type="text" @bind="keyWords" />
+            <input id="inputSearch" type="text" @bind="KeyWords" />
             <button id="ButtonSearch" @onclick="@(() =>  GetUsers())">Find</button>
         </div>
 
         @if (Users != null && Users.Count != 0)
         {
-            foreach (var user in Users)
+            foreach (var User in Users)
             {
 
-                if (user.Id != LoggedUser.Id)
+                if (User.Id != LoggedUser.Id)
                 {
                     <div class="UserList-User">
                         <div class="FindUser-PhotoContainer">
-                            <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{user.ProfileImageId}")" />
+                            <img id="UserPhoto" class="UserList-Photo" src="@($"/DisplayImage/{User.ProfileImageId}")" />
                         </div>
 
-                        @if (user.UserName.Length > 20)
+                        @if (User.UserName.Length > 20)
                         {
-                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName.Substring(0, 20)......</button>
+                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName.Substring(0, 20)......</button>
                         }
                         else
                         {
-                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{user.Id}"))">@user.UserName</button>
+                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName</button>
                         }
 
                     </div>
@@ -111,12 +111,12 @@
 }
 
 @code{
-    private string keyWords = "";
+    private string KeyWords = "";
     private List<UserModel> Users;
     private UserModel LoggedUser;
     private List<UserModel> UserList = new List<UserModel>();
     private List<UserModel> OnlineFriendsList = new List<UserModel>();
-    private HubConnection? _hubConnection;
+    private HubConnection? _HubConnection;
     private Dictionary<string, string> ConnectionsMap;
     private Dictionary<string, int> UnreadMessageCounts = new Dictionary<string, int>();
     protected override async Task OnInitializedAsync()
@@ -130,17 +130,17 @@
         else
         { 
             UserList = await _UserService.GetUsers(LoggedUser.Id);
-            _hubConnection = new HubConnectionBuilder()
+            _HubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
             {
                 options.Headers["UserId"] = LoggedUser.Id;
             })
             .Build();
 
-            await _hubConnection.StartAsync();
+            await _HubConnection.StartAsync();
 
-            await _hubConnection.InvokeAsync("JoinGroup", LoggedUser.Id);
-            _hubConnection.On("ChangeMessageNotification", async () =>
+            await _HubConnection.InvokeAsync("JoinGroup", LoggedUser.Id);
+            _HubConnection.On("ChangeMessageNotification", async () =>
             {
 
                 await ChangeMessageNotification();
@@ -156,30 +156,30 @@
 
 
     }
-    private void RedirectToPage(string url)
+    private void RedirectToPage(string Url)
     {
-        Navigation.NavigateTo(url, forceLoad: true);
+        Navigation.NavigateTo(Url, forceLoad: true);
     }
     public async Task GetUsers()
     {
-        var users = _userManager.Users.AsQueryable();
+        var Users = _userManager.Users.AsQueryable();
 
-        if (!string.IsNullOrEmpty(keyWords))
+        if (!string.IsNullOrEmpty(KeyWords))
         {
-            users = users.Where(x => x.UserName.Contains(keyWords));
+            Users = Users.Where(x => x.UserName.Contains(KeyWords));
         }
-        Users = await users.ToListAsync();
-        if (Users.Contains(LoggedUser))
+        this.Users = await Users.ToListAsync<global::messager.models.UserModel>();
+        if (this.Users.Contains(LoggedUser))
         {
-            Users.Remove(LoggedUser);
+            this.Users.Remove(LoggedUser);
         }
         StateHasChanged();      
     }
     public async ValueTask DisposeAsync()
     {
-        if (_hubConnection != null)
+        if (_HubConnection != null)
         {
-            await _hubConnection.DisposeAsync();
+            await _HubConnection.DisposeAsync();
         }
     }
 
@@ -189,21 +189,21 @@
         {        
             ConnectionsMap = _SignalManager.GetConnectionUserMap();
 
-            foreach (var user in UserList)
+            foreach (var User in UserList)
             {
 
-                if (ConnectionsMap.ContainsValue(user.Id) && !OnlineFriendsList.Contains(user))
+                if (ConnectionsMap.ContainsValue(User.Id) && !OnlineFriendsList.Contains(User))
                 {
-                    OnlineFriendsList.Add(user);
+                    OnlineFriendsList.Add(User);
                 }
-                if (!ConnectionsMap.Values.Contains(user.Id) && OnlineFriendsList.Contains(user))
+                if (!ConnectionsMap.Values.Contains(User.Id) && OnlineFriendsList.Contains(User))
                 {
-                    OnlineFriendsList.Remove(user);
+                    OnlineFriendsList.Remove(User);
                 }
 
             }
             StateHasChanged();
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(20));
          
 
         }

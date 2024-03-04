@@ -14,48 +14,49 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 namespace messager
 {
-    public class AppHub :Hub
-    {
-        public static Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
-             
-        public override async Task OnDisconnectedAsync(Exception exception)
-        {
-            var connectionId = Context.ConnectionId;     
-            ConnectionUserMap.Remove(connectionId);
-            await base.OnDisconnectedAsync(exception);         
-        }
-        public override async Task OnConnectedAsync()
-        {          
-            var UserId = Context.GetHttpContext().Request.Headers["UserId"].ToString();
-            var connectionId = Context.ConnectionId;                            
-            ConnectionUserMap[connectionId] = UserId;        
-            await base.OnConnectedAsync();      
-        }
-        public Dictionary<string, string> GetConnectionUserMap()
-        {
-            return ConnectionUserMap;
-        }
-        public string GetConnectionId()
-        {
-            return Context.ConnectionId.ToString();
-        }
-        public async Task SendMessage(string message,string UserId,string MessageId)
-        {  
-            await Clients.Groups(UserId).SendAsync("ReciveNotification", message, MessageId);
-                  
-        }    
-        public async Task JoinGroup(string UserId)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, UserId);
-            
-        }
-        public async Task ReadMessages(string UserId)
-        {
-            await Clients.Groups(UserId).SendAsync("ReadMessages");
-        }    
-        public async Task ChangeMessageNotification(string UserId)
-        {
-            await Clients.Groups(UserId).SendAsync("ChangeMessageNotification");
-        }
-    }
+	public class AppHub : Hub
+	{
+		public static Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
+
+		public override async Task OnDisconnectedAsync(Exception exception)
+		{
+			var connectionId = Context.ConnectionId;
+			ConnectionUserMap.Remove(connectionId);
+			await base.OnDisconnectedAsync(exception);
+		}
+		public override async Task OnConnectedAsync()
+		{
+			var UserId = Context.GetHttpContext().Request.Headers["UserId"].ToString();
+			var connectionId = Context.ConnectionId;
+			ConnectionUserMap[connectionId] = UserId;
+			await base.OnConnectedAsync();
+		}
+		public Dictionary<string, string> GetConnectionUserMap()
+		{
+			return ConnectionUserMap;
+		}
+		public string GetConnectionId()
+		{
+			return Context.ConnectionId.ToString();
+		}
+		public async Task SendMessage(string message, string UserId, string MessageId)
+		{
+
+			await Clients.Groups(UserId).SendAsync("ReciveNotification", message, MessageId);
+
+		}
+		public async Task JoinGroup(string UserId)
+		{
+			await Groups.AddToGroupAsync(Context.ConnectionId, UserId);
+
+		}
+		public async Task ReadMessages(string UserId)
+		{
+			await Clients.Groups(UserId).SendAsync("ReadMessages");
+		}
+		public async Task ChangeMessageNotification(string UserId)
+		{
+			await Clients.Groups(UserId).SendAsync("ChangeMessageNotification");
+		}
+	}
 }
