@@ -31,7 +31,6 @@ builder.Services.AddSignalR(options =>
     options.ClientTimeoutInterval = TimeSpan.FromSeconds(20);
 });
 
-builder.Services.AddSingleton<SignalRManager>();
 
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddHttpClient();
