@@ -5,42 +5,26 @@ using Microsoft.EntityFrameworkCore;
 namespace messager.Services
 {
     public class MessageService : IMessageService
-    {      
+    {
         private readonly AppDbContext _Context;
-        public MessageService(AppDbContext context)
-        {          
-            _Context = context;
+        public MessageService(AppDbContext Context)
+        {
+            _Context = Context;
         }
 
-        public async Task<string> AddMessage(string messagecontent, string reciverid, string CreatorId)
+        public async Task<string> AddMessage(string MessageContent, string ReceiverId, string CreatorId)
         {
             var Message = new MessageModel
             {
-                Content = messagecontent,
+                Content = MessageContent,
                 CreatorId = CreatorId,
-                ReciverId = reciverid
+                ReciverId = ReceiverId
             };
 
             await _Context.MessageList.AddAsync(Message);
             await _Context.SaveChangesAsync();
             return Message.Id.ToString();
         }
-        public async Task<List<MessageModel>> GetMessages(string CreatorId, string ReciverId)
-        {
-            var Messages = await _Context.MessageList.AsNoTracking()
-           .Where(x => (x.CreatorId == CreatorId && x.ReciverId == ReciverId) ||
-           (x.CreatorId == ReciverId && x.ReciverId == CreatorId))
-           .ToListAsync();
 
-            return Messages;
-        }
-        public async Task<List<MessageModel>> GetMessagesByCreator(string CreatorId)
-        {
-        return await _Context.MessageList.Where(x => x.CreatorId == CreatorId).ToListAsync();           
-        }
-        public async Task<List<MessageModel>> GetMessagesByReceiver(string ReceiverId)
-        {
-            return await _Context.MessageList.Where(x => x.ReciverId == ReceiverId).ToListAsync();
-        }
     }
 }

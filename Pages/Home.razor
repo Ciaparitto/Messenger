@@ -15,9 +15,8 @@
 
 @inject NavigationManager Navigation
 @inject UserManager<UserModel> _userManager
-@inject IUserService _UserService
-@inject SignalRManager _SignalManager
-@inject IMessageService _MessageService
+@inject IUserGetter _UserGetter
+@inject IMessageGetter _MessageGetter
 
 <link href="css/style.css" rel="stylesheet">
 <PageTitle>Home</PageTitle>
@@ -46,7 +45,7 @@
                     </div>
                     @if (User.UserName.Length > 20)
                     {
-                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName.Substring(0, 20)......</button>
+                        <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName.Substring(0, 20)...</button>
                     }
                     else
                     {
@@ -79,7 +78,7 @@
 
                         @if (User.UserName.Length > 20)
                         {
-                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName.Substring(0, 20)......</button>
+                            <button class="UserList-Button" @onclick="@(() =>  RedirectToPage($"chat/{User.Id}"))">@User.UserName.Substring(0, 20)...</button>
                         }
                         else
                         {
@@ -122,14 +121,14 @@
     protected override async Task OnInitializedAsync()
     {
 
-        LoggedUser = await _UserService.GetLoggedUser();
+        LoggedUser = await _UserGetter.GetLoggedUser();
         if (LoggedUser == null)
         {
             RedirectToPage("/Account/Login");
         }
         else
         { 
-            UserList = await _UserService.GetUsers(LoggedUser.Id);
+            UserList = await _UserGetter.GetUsers(LoggedUser.Id);
             _HubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
             {
@@ -144,7 +143,7 @@
             {
 
                 await ChangeMessageNotification();
-                UserList = await _UserService.GetUsers(LoggedUser.Id);
+                UserList = await _UserGetter.GetUsers(LoggedUser.Id);
                 StateHasChanged();
             });
 
@@ -186,8 +185,8 @@
     public async Task GetOnlineFriends()
     {
         while (true)
-        {        
-            ConnectionsMap = _SignalManager.GetConnectionUserMap();
+        {
+            ConnectionsMap = AppHub.ConnectionUserMap;
 
             foreach (var User in UserList)
             {
@@ -211,7 +210,7 @@
     }
     private async Task<int> CountUnreadMessages(UserModel User)
     {
-        var UnreadMessages = await _MessageService.GetMessages(LoggedUser.Id, User.Id);
+        var UnreadMessages = await _MessageGetter.GetMessages(LoggedUser.Id, User.Id);
         UnreadMessages = UnreadMessages.Where(x => x.IsRead == false && x.CreatorId == User.Id).ToList();
         return UnreadMessages.Count;
     }

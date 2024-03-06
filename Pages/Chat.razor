@@ -1,12 +1,6 @@
 ﻿@page "/chat/{ReciverIdForm}"
 @implements IAsyncDisposable
 
-@inject NavigationManager Navigation
-@inject AppDbContext _Context
-@inject IJSRuntime JSRuntime
-@inject IUserService _UserService
-@inject IMessageService _MessageService
-
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims;
@@ -15,6 +9,15 @@
 @using messager.Services.Interfaces;
 @using messager.Services;
 @using messager.models;
+
+
+@inject NavigationManager Navigation
+@inject AppDbContext _Context
+@inject IJSRuntime JSRuntime
+@inject IUserGetter _UserGetter
+@inject IMessageGetter _MessageGetter
+@inject IMessageService _MessageService
+
 
 
 
@@ -54,9 +57,9 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		Receiver = await _UserService.GetUserById(ReciverIdForm);
-		User = await _UserService.GetLoggedUser();
-		MessageList = await _MessageService.GetMessages(User.Id, Receiver.Id);
+		Receiver = await _UserGetter.GetUserById(ReciverIdForm);
+		User = await _UserGetter.GetLoggedUser();
+		MessageList = await _MessageGetter.GetMessages(User.Id, Receiver.Id);
 		await ReadMessages();
 		await GenerateMessages();
 		_HubConnection = new HubConnectionBuilder()
@@ -80,7 +83,7 @@
 		_HubConnection.On("ReadMessages", async () =>
 			{
 
-				MessageList = await _MessageService.GetMessages(User.Id, Receiver.Id);
+				MessageList = await _MessageGetter.GetMessages(User.Id, Receiver.Id);
 				var UnReadMessages = MessageList.Where(x => x.ReciverId == Receiver.Id && x.IsRead == false).ToList();
 				foreach (var Message in UnReadMessages)
 				{
@@ -114,7 +117,7 @@
 	}
 	private async Task GenerateMessages()
 	{
-		MessageList = await _MessageService.GetMessages(User.Id, Receiver.Id);
+		MessageList = await _MessageGetter.GetMessages(User.Id, Receiver.Id);
 		if (MessageList != null)
 		{
 			foreach (var Message in MessageList)

@@ -1,34 +1,21 @@
-﻿
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using messager.models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Azure.Documents;
-using messager.Services.Interfaces;
-using messager.Services;
-using System.Net.Http;
-
-using System.Net.Http;
-using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.SignalR;
 namespace messager
 {
 	public class AppHub : Hub
 	{
 		public static Dictionary<string, string> ConnectionUserMap = new Dictionary<string, string>();
 
-		public override async Task OnDisconnectedAsync(Exception exception)
+		public override async Task OnDisconnectedAsync(Exception Exception)
 		{
 			var connectionId = Context.ConnectionId;
 			ConnectionUserMap.Remove(connectionId);
-			await base.OnDisconnectedAsync(exception);
+			await base.OnDisconnectedAsync(Exception);
 		}
 		public override async Task OnConnectedAsync()
 		{
 			var UserId = Context.GetHttpContext().Request.Headers["UserId"].ToString();
-			var connectionId = Context.ConnectionId;
-			ConnectionUserMap[connectionId] = UserId;
+			var ConnectionId = Context.ConnectionId;
+			ConnectionUserMap[ConnectionId] = UserId;
 			await base.OnConnectedAsync();
 		}
 		public Dictionary<string, string> GetConnectionUserMap()
@@ -39,10 +26,10 @@ namespace messager
 		{
 			return Context.ConnectionId.ToString();
 		}
-		public async Task SendMessage(string message, string UserId, string MessageId)
+		public async Task SendMessage(string Message, string UserId, string MessageId)
 		{
 
-			await Clients.Groups(UserId).SendAsync("ReciveNotification", message, MessageId);
+			await Clients.Groups(UserId).SendAsync("ReciveNotification", Message, MessageId);
 
 		}
 		public async Task JoinGroup(string UserId)
