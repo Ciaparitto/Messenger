@@ -4,6 +4,7 @@
 #
 ## Technology list
 ### - C#
+### - Java Script
 ### - .NET 8.0
 ### - ASP.NET Core
 ### - ASP.NET Core MVC
