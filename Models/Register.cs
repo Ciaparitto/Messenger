@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace messager.models
+namespace Messenger.models
 {
     public class Register
     {

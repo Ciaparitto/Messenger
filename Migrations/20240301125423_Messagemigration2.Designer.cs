@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using messager;
+using Messenger;
 
 #nullable disable
 
-namespace messager.Migrations
+namespace Messenger.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20240301125423_Messagemigration2")]

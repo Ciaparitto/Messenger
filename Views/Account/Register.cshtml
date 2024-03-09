@@ -2,12 +2,12 @@
 	<link href="~/css/style.css" rel="stylesheet" />
 	<title>Sign Up</title>
 </head>
-@model messager.models.Register
+@model Messenger.models.Register
 <div id="LoginAndRedirect-Container">
 	@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
 	{
 		<div id="registerContainer">
-			@Html.ValidationSummary()
+			
 			<p class="info-paragraph">
 				<span>Username</span>
 				<br />
@@ -25,14 +25,16 @@
 			</p>
 			<p>
 
-				<input class="customfiles" type="file" id="customfiles" name="files" multiple />
+				<input class="customfiles" type="file" id="customfiles" name="File" multiple />
 				<label id="customfilelabel" for="customfiles">Choose Photo</label>
 			</p>
 			<button id="ButtonRegister" type="submit">SIGN UP</button>
+		
 		</div>
-
-
+		@Html.ValidationSummary(false, "", new { @class = "validation-errors" })
 	}
+	
+	
 	<div id="RedirectDiv">
 		<h3>If you have account </h3>
 		@Html.ActionLink("LOGIN", "Login", "Account", null, new { @class = "Button-Redirect" })

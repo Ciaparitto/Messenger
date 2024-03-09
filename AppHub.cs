@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-namespace messager
+namespace Messenger
 {
 	public class AppHub : Hub
 	{

@@ -1,4 +1,7 @@
-﻿@using messager.Pages
+﻿@using Messenger.Pages
+@using Messenger
+@namespace Messenger.Pages
+
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />

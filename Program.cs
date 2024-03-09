@@ -1,7 +1,7 @@
-using messager;
-using messager.models;
-using messager.Services;
-using messager.Services.Interfaces;
+using Messenger;
+using Messenger.models;
+using Messenger.Services;
+using Messenger.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +20,7 @@ builder.Services.AddSignalR(options =>
 });
 
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<IImageSaver, ImageSaver>();
 builder.Services.AddScoped<IMessageGetter, MessageGetter>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IUserGetter, UserGetter>();

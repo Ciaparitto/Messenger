@@ -8,9 +8,9 @@
 @using Microsoft.AspNetCore.SignalR
 @using Microsoft.AspNetCore.SignalR.Client
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
-@using messager.Services
-@using messager.Services.Interfaces;
-@using messager.models;
+@using Messenger.Services
+@using Messenger.Services.Interfaces;
+@using Messenger.models;
 @using Microsoft.EntityFrameworkCore;
 
 @inject NavigationManager Navigation
@@ -167,7 +167,7 @@
         {
             Users = Users.Where(x => x.UserName.Contains(KeyWords));
         }
-        this.Users = await Users.ToListAsync<global::messager.models.UserModel>();
+        this.Users = await Users.ToListAsync<global::Messenger.models.UserModel>();
         if (this.Users.Contains(LoggedUser))
         {
             this.Users.Remove(LoggedUser);
@@ -202,7 +202,7 @@
 
             }
             StateHasChanged();
-            await Task.Delay(TimeSpan.FromSeconds(20));
+            await Task.Delay(TimeSpan.FromSeconds(4));
          
 
         }

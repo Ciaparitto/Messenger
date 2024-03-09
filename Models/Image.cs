@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using messager.models;
+using Messenger.models;
 
-namespace messager.Models
+namespace Messenger.Models
 {
 	public class Image
 	{
@@ -13,10 +13,8 @@ namespace messager.Models
 		[ForeignKey("UserId")]
 		public string UserId { get; set; }
 		public UserModel User { get; set; }
-
 		[ForeignKey("MessageId")]
 		public string? MessageId { get; set; }
-
 		public MessageModel? Message { get; set; }
 		[NotMapped]
 		public string Tag { get; set; }

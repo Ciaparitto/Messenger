@@ -1,10 +1,10 @@
-﻿using messager.models;
-using messager.Models;
+﻿using Messenger.models;
+using Messenger.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace messager
+namespace Messenger
 {
 	public class AppDbContext : IdentityDbContext<UserModel>
 	{

@@ -1,22 +1,27 @@
-﻿using messager.models;
-using messager.Models;
+﻿using Messenger.models;
+using Messenger.Models;
+using Messenger.Services;
+using Messenger.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Documents;
 
 
-namespace messager.Controllers
+namespace Messenger.Controllers
 {
 	public class AccountController : Controller
 	{
 		private readonly UserManager<UserModel> _UserManager;
 		private readonly SignInManager<UserModel> _SignInManager;
 		private readonly AppDbContext _Context;
+		private readonly IImageSaver _ImageSaver;
 
-		public AccountController(UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context)
+		public AccountController(UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context,IImageSaver ImageSaver)
 		{
 			_UserManager = UserManager;
 			_SignInManager = SignInManager;
 			_Context = Context;
+			_ImageSaver = ImageSaver;
 
 		}
 		[HttpGet]
@@ -25,7 +30,7 @@ namespace messager.Controllers
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Register(Register UserData, List<IFormFile> Files)
+		public async Task<IActionResult> Register(Register UserData, IFormFile File)
 		{
 
 
@@ -36,44 +41,21 @@ namespace messager.Controllers
 					Email = UserData.EmailAdress,
 					UserName = UserData.UserName,
 				};
-				IdentityResult result = await _UserManager.CreateAsync(NewUser, UserData.Password);
-
-				if (result.Succeeded)
-				{
-
-					if (Files != null && Files.Count > 0)
+				
+					var result = await _UserManager.CreateAsync(NewUser, UserData.Password);
+					if (result.Succeeded)
 					{
-						foreach (var ImageFile in HttpContext.Request.Form.Files)
-						{
-
-							using var memoryStream = new MemoryStream();
-
-							ImageFile.CopyTo(memoryStream);
-
-							var Image = new Image
-							{
-								image = memoryStream.ToArray(),
-								ContentType = ImageFile.ContentType,
-								UserId = NewUser.Id
-
-							};
-							_Context.ImageList.Add(Image);
-							_Context.SaveChanges();
-							NewUser.ProfileImageId = Image.Id;
-
-							_Context.SaveChanges();
-						}
-					}
+						await _ImageSaver.SaveImage(File, NewUser.Id);
+						await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
+						return RedirectToAction("Index", "Home");
+					}	
 					else
 					{
-						NewUser.ProfileImageId = 1;
-						_Context.SaveChanges();
+						Console.WriteLine($"error error error error error {result.Errors.FirstOrDefault().Description}");
 					}
-				}
-				await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
-
-				return RedirectToAction("Index", "Home");
+					return View();
 			}
+		
 			return View();
 		}
 		[HttpGet]

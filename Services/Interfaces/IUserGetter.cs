@@ -1,6 +1,6 @@
-﻿using messager.models;
+﻿using Messenger.models;
 
-namespace messager.Services.Interfaces
+namespace Messenger.Services.Interfaces
 {
     public interface IUserGetter
     {

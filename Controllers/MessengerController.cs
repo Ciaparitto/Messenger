@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace messager.Controllers
+namespace Messenger.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

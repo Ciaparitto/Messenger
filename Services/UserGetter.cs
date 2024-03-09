@@ -1,8 +1,8 @@
-﻿using messager.models;
-using messager.Services.Interfaces;
+﻿using Messenger.models;
+using Messenger.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace messager.Services
+namespace Messenger.Services
 {
 	public class UserGetter : IUserGetter
 	{

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace messager.Migrations
+namespace Messenger.Migrations
 {
     public partial class usermigration4 : Migration
     {
