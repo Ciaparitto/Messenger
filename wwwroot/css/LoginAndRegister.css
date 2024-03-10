@@ -1,0 +1,97 @@
+﻿#LoginAndRedirect-Container, #registerContainer, #loginconainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+}
+
+#loginconainer, #registerContainer {
+    width: 100%;
+}
+
+#Buttonlogin, #ButtonRegister {
+    background-color: rgb(51,187,255);
+    border-radius: 20px;
+    padding: 10px;
+    margin: 0px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#ButtonRegister {
+    margin: 20px;
+    width: 10%;
+}
+
+#Buttonlogin {
+    width: 70%;
+}
+
+.Button-Redirect {
+    width: 12.5%;
+    text-decoration: none;
+    color: black;
+    margin: 0;
+}
+
+#RedirectDiv {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+#inputSearch, .inputlogin {
+    padding: 5px;
+    margin: 10px 0px;
+    border-radius: 15px;
+}
+
+.inputlogin {
+    width: 100%;
+}
+
+.info-paragraph {
+    text-align: center;
+    width: 10%;
+}
+
+.login-paragraph {
+    text-align: center;
+}
+
+#customfilelabel {
+
+    padding: 10px 50px;
+    background-color: rgb(51,187,255);
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+    text-align: center;
+}
+
+#customfiles {
+    display: none;
+}
+
+.Button-Redirect {
+    background-color: rgb(51,187,255);
+    padding: 10px;
+    display: table;
+    border-radius: 15px;
+    border: none;
+    text-align: center;
+    float: left;
+}
+
+.Form {
+    width: 100%;
+}

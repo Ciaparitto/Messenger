@@ -1,4 +1,4 @@
-function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClassNameImg, MessageId) {
+function AddMessageToViewWithImageId(message, ElementClassNameMess, ProfileId, ElementClassNameImg, MessageId) {
     var MessageImgContainer = document.createElement("div");
     var ImgContainer = document.createElement("div");
     var MessContainer = document.createElement("div");
@@ -12,6 +12,7 @@ function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClass
     MessageImgContainer.appendChild(MessageContainerChild);
     var Message = document.createElement("div");
     Message.innerHTML = message;
+    Message.className = "Message";
     MessContainer.className = ElementClassNameMess;
 
     MessageContainerChild.appendChild(MessContainer);
@@ -23,7 +24,46 @@ function AddMessageToView(message, ElementClassNameMess, ProfileId, ElementClass
     ImgContainer.className = ElementClassNameImg;
     imgElement.className = "photo";
 
+
     MessContainer.appendChild(Message);
+    ImgContainer.appendChild(imgElement);
+
+    scrollToBottom();
+}
+function AddMessageToViewWithImageURL(message, ElementClassNameMess, Url, ElementClassNameImg, MessageId) {
+    var MessageImgContainer = document.createElement("div");
+    var ImgContainer = document.createElement("div");
+    var MessContainer = document.createElement("div");
+    var MessageContainerChild = document.createElement("div");
+
+    MessageContainerChild.className = "MessageContainerChild" + ElementClassNameMess;
+    MessageImgContainer.className = ElementClassNameMess + "Container";
+
+    var MessageArea = document.getElementById("messageConatiner");
+    MessageArea.appendChild(MessageImgContainer);
+    MessageImgContainer.appendChild(MessageContainerChild);
+    var Message = document.createElement("div");
+    Message.innerHTML = message;
+    Message.className = "Message";
+    MessContainer.className = ElementClassNameMess;
+
+    var DeleteIcon = document.createElement("img");
+    DeleteIcon.className = "DeleteIcon";
+    DeleteIcon.src = "/Icons/delete.png";
+    DeleteIcon.role = "button";
+    DeleteIcon.onclick = function () { DeleteMessage(MessageId, MessageImgContainer) };
+
+    MessageContainerChild.appendChild(MessContainer);
+    MessageContainerChild.appendChild(ImgContainer);
+
+    var imgElement = document.createElement("img");
+    imgElement.src = Url;
+    imgElement.id = MessageId;
+    ImgContainer.className = ElementClassNameImg;
+    imgElement.className = "photo";
+
+    MessContainer.appendChild(Message);
+    MessContainer.appendChild(DeleteIcon);
     ImgContainer.appendChild(imgElement);
 
     scrollToBottom();
@@ -33,7 +73,11 @@ function scrollToBottom() {
     div.scrollTop = div.scrollHeight;
 }
 
-function ChangePhoto(PhotoId, ProfileId) {
+function ChangePhoto(PhotoId) {
     var photo = document.getElementById(PhotoId);
-    photo.src = "/DisplayImage/" + ProfileId;
+    photo.src = "/Icons/message-read.png";
+}
+function DeleteMessage(MessageId, MessageObj) {
+    fetch(`/DeleteMessage/${MessageId}`);
+    MessageObj.remove();
 }

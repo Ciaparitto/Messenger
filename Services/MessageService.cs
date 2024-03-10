@@ -25,14 +25,6 @@ namespace Messenger.Services
 			await _Context.SaveChangesAsync();
 			return Message.Id.ToString();
 		}
-		public async Task DeleteMessage(string MessageId)
-		{
-			var Message = await _Context.MessageList.FindAsync(MessageId);
-			if (Message != null)
-			{
-				_Context.MessageList.Remove(Message);
-				await _Context.SaveChangesAsync();
-			}
-		}
+	
 	}
 }

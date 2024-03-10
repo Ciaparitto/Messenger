@@ -16,7 +16,7 @@ namespace Messenger.Controllers
 		private readonly AppDbContext _Context;
 		private readonly IImageSaver _ImageSaver;
 
-		public AccountController(UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context,IImageSaver ImageSaver)
+		public AccountController(UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context, IImageSaver ImageSaver)
 		{
 			_UserManager = UserManager;
 			_SignInManager = SignInManager;
@@ -30,7 +30,7 @@ namespace Messenger.Controllers
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Register(Register UserData, IFormFile File)
+		public async Task<IActionResult> Register(Register UserData, IFormFile ProfileImage)
 		{
 
 
@@ -41,21 +41,21 @@ namespace Messenger.Controllers
 					Email = UserData.EmailAdress,
 					UserName = UserData.UserName,
 				};
-				
-					var result = await _UserManager.CreateAsync(NewUser, UserData.Password);
-					if (result.Succeeded)
-					{
-						await _ImageSaver.SaveImage(File, NewUser.Id);
-						await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
-						return RedirectToAction("Index", "Home");
-					}	
-					else
-					{
-						Console.WriteLine($"error error error error error {result.Errors.FirstOrDefault().Description}");
-					}
-					return View();
+
+				var result = await _UserManager.CreateAsync(NewUser, UserData.Password);
+				if (result.Succeeded)
+				{
+					await _ImageSaver.SaveImage(ProfileImage, NewUser.Id);
+					await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
+					return RedirectToAction("Index", "Home");
+				}
+				else
+				{
+					Console.WriteLine($"error error error error error {result.Errors.FirstOrDefault().Description}");
+				}
+				return View();
 			}
-		
+
 			return View();
 		}
 		[HttpGet]

@@ -64,21 +64,21 @@
 		await GenerateMessages();
 		_HubConnection = new HubConnectionBuilder()
 
-					.WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
-					{
-						options.Headers["UserId"] = User.Id;
-					})
-					.Build();
+		.WithUrl(Navigation.ToAbsoluteUri("/testhub"), options =>
+		{
+			options.Headers["UserId"] = User.Id;
+		})
+		.Build();
 		await _HubConnection.StartAsync();
 
 		_HubConnection.On<string, string>("ReciveNotification", async (Message, MessageId) =>
-					{
-						AddMessageToView(AddBreakLines(Message), "reciverMessages", Receiver.ProfileImageId.ToString(), "reciverImg", MessageId);
+			{
+				AddMessageToViewWithImageId(AddBreakLines(Message), "reciverMessages", Receiver.ProfileImageId.ToString(), "reciverImg", MessageId);
 
-						JSRuntime.InvokeVoidAsync("scrollToBottom");
-						await _HubConnection.InvokeAsync("ReadMessages", Receiver.Id);
+				JSRuntime.InvokeVoidAsync("scrollToBottom");
+				await _HubConnection.InvokeAsync("ReadMessages", Receiver.Id);
 
-					});
+			});
 
 		_HubConnection.On("ReadMessages", async () =>
 			{
@@ -87,9 +87,9 @@
 				var UnReadMessages = MessageList.Where(x => x.ReciverId == Receiver.Id && x.IsRead == false).ToList();
 				foreach (var Message in UnReadMessages)
 				{
-					await JSRuntime.InvokeVoidAsync("ChangePhoto", Message.Id, "14");
-					var CurrenMessage = await _Context.MessageList.FindAsync(Message.Id);
-					CurrenMessage.IsRead = true;
+					await JSRuntime.InvokeVoidAsync("ChangePhoto", Message.Id);
+					var CurrentMessage = await _Context.MessageList.FindAsync(Message.Id);
+					CurrentMessage.IsRead = true;
 					await _Context.SaveChangesAsync();
 				}
 			});
@@ -100,8 +100,8 @@
 	}
 	private async Task ReadMessages()
 	{
-
-		var UnReadMessages = MessageList.Where(x => x.ReciverId == Receiver.Id && x.IsRead == false).ToList();
+		MessageList = await _MessageGetter.GetMessages(User.Id, Receiver.Id);
+		var UnReadMessages = MessageList.Where(x => x.CreatorId == Receiver.Id && x.IsRead == false).ToList();
 		foreach (var message in UnReadMessages)
 		{
 			if (!message.IsRead)
@@ -127,19 +127,17 @@
 				{
 					if (Message.IsRead)
 					{
-						AddMessageToView(AddBreakLines(Message.Content), "creatorMessages", "14", "creatorImg", Message.Id.ToString()); // image with id 6 have readed message icon
+						AddMessageToViewWithImageURL(AddBreakLines(Message.Content), "creatorMessages", "Icons/message-read.png", "creatorImg", Message.Id.ToString()); // image with id 6 have readed message icon
 					}
 					else
 					{
-						AddMessageToView(AddBreakLines(Message.Content), "creatorMessages", "13", "creatorImg", Message.Id.ToString()); // image with id 13h ave sended message icon
+						AddMessageToViewWithImageURL(AddBreakLines(Message.Content), "creatorMessages", "Icons/message-send.jpg", "creatorImg", Message.Id.ToString()); // image with id 13h ave sended message icon
 					}
-
-
 				}
 				else
 				{
 
-					AddMessageToView(AddBreakLines(Message.Content), "reciverMessages", Receiver.ProfileImageId.ToString(), "reciverImg", Message.Id.ToString());
+					AddMessageToViewWithImageId(AddBreakLines(Message.Content), "reciverMessages", Receiver.ProfileImageId.ToString(), "reciverImg", Message.Id.ToString());
 				}
 
 			}
@@ -156,10 +154,15 @@
 			_HubConnection.DisposeAsync();
 		}
 	}
-	private async Task AddMessageToView(string MessageContent, string MessageClassName, string ProfileId, string ImgClassName, string MessageId)
+	private async Task AddMessageToViewWithImageId(string MessageContent, string MessageClassName, string ProfileId, string ImgClassName, string MessageId)
 	{
 
-		await JSRuntime.InvokeVoidAsync("AddMessageToView", MessageContent, MessageClassName, ProfileId, ImgClassName, MessageId);
+		await JSRuntime.InvokeVoidAsync("AddMessageToViewWithImageId", MessageContent, MessageClassName, ProfileId, ImgClassName, MessageId);
+	}
+	private async Task AddMessageToViewWithImageURL(string MessageContent, string MessageClassName, string ImageURL, string ImgClassName, string MessageId)
+	{
+
+		await JSRuntime.InvokeVoidAsync("AddMessageToViewWithImageURL", MessageContent, MessageClassName, ImageURL, ImgClassName, MessageId);
 	}
 	private async Task SendMessage(string MessageContent, string ReciverId)
 	{
@@ -173,7 +176,7 @@
 			await _HubConnection.InvokeAsync("SendMessage", MessageContent, Receiver.Id, MessageId);
 
 
-			AddMessageToView(AddBreakLines(MessageContent), "creatorMessages", "13", "creatorImg", MessageId);
+			AddMessageToViewWithImageURL(AddBreakLines(MessageContent), "creatorMessages", "Icons/message-send.jpg", "creatorImg", MessageId);
 			await JSRuntime.InvokeVoidAsync("scrollToBottom");
 
 

@@ -1,10 +1,10 @@
 ﻿<head>
-	<link href="~/css/style.css" rel="stylesheet" />
+	<link href="~/css/LoginAndRegister.css" rel="stylesheet" />
 	<title>Sign Up</title>
 </head>
 @model Messenger.models.Register
 <div id="LoginAndRedirect-Container">
-	@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+	@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @class = "Form" }))
 	{
 		<div id="registerContainer">
 			
@@ -25,7 +25,7 @@
 			</p>
 			<p>
 
-				<input class="customfiles" type="file" id="customfiles" name="File" multiple />
+				<input class="customfiles" type="file" id="customfiles" name="ProfileImage" multiple />
 				<label id="customfilelabel" for="customfiles">Choose Photo</label>
 			</p>
 			<button id="ButtonRegister" type="submit">SIGN UP</button>
