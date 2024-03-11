@@ -30,7 +30,7 @@ namespace Messenger.Controllers
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Register(Register UserData, IFormFile ProfileImage)
+		public async Task<IActionResult> Register(Register UserData, IFormFile? ProfileImage)
 		{
 
 
@@ -45,15 +45,29 @@ namespace Messenger.Controllers
 				var result = await _UserManager.CreateAsync(NewUser, UserData.Password);
 				if (result.Succeeded)
 				{
-					await _ImageSaver.SaveImage(ProfileImage, NewUser.Id);
-					await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
-					return RedirectToAction("Index", "Home");
+					if (_Context.Users.Where(User => User.Email == UserData.EmailAdress).ToList().Count != 0)
+					{
+						ViewBag.Error = $"Email {UserData.EmailAdress} is already taken";
+					}
+					else
+					{
+                        if (ProfileImage != null && ProfileImage.Length > 0)
+						{
+                            await _ImageSaver.SaveImage(ProfileImage, NewUser.Id);
+                        }
+                          
+						await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
+
+						return RedirectToAction("Index", "Home");
+					}
+
 				}
 				else
 				{
-					Console.WriteLine($"error error error error error {result.Errors.FirstOrDefault().Description}");
+
+					ViewBag.Error = result.Errors.FirstOrDefault().Description;
 				}
-				return View();
+
 			}
 
 			return View();

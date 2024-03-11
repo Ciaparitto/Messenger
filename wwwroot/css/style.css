@@ -230,22 +230,6 @@
     background-color: white;
 }
 
-.validation-errors {
-    background-color: rgb(51,187,255);
-    padding: 20px;
-    border-radius: 20px;
-    margin: 10px;
-}
-
-li {
-    list-style-type: none;
-    margin: 10px 0px;
-    font-weight: bold;
-}
-
-ul {
-    padding: 0px;
-}
 
 
 

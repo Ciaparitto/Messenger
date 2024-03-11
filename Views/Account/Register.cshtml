@@ -4,35 +4,41 @@
 </head>
 @model Messenger.models.Register
 <div id="LoginAndRedirect-Container">
-	@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @class = "Form" }))
-	{
-		<div id="registerContainer">
-			
-			<p class="info-paragraph">
-				<span>Username</span>
-				<br />
-				@Html.TextBoxFor(x => x.UserName, new { @class = "inputlogin" })
-			</p>
-			<p class="info-paragraph">
-				<span>Email Adress</span>
-				<br />
-				@Html.TextBoxFor(x => x.EmailAdress, new { @class = "inputlogin" })
-			</p>
-			<p class="info-paragraph">
-				<span>Password</span>
-				<br />
-				@Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })
-			</p>
-			<p>
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @class = "Form" }))
+    {
+        <div id="registerContainer">
 
-				<input class="customfiles" type="file" id="customfiles" name="ProfileImage" multiple />
-				<label id="customfilelabel" for="customfiles">Choose Photo</label>
-			</p>
-			<button id="ButtonRegister" type="submit">SIGN UP</button>
-		
-		</div>
-		@Html.ValidationSummary(false, "", new { @class = "validation-errors" })
-	}
+            <p class="info-paragraph">
+                <span>Username</span>
+                <br />
+                @Html.TextBoxFor(x => x.UserName, new { @class = "inputlogin" })
+            </p>
+            <p class="info-paragraph">
+                <span>Email Adress</span>
+                <br />
+                @Html.TextBoxFor(x => x.EmailAdress, new { @class = "inputlogin" })
+            </p>
+            <p class="info-paragraph">
+                <span>Password</span>
+                <br />
+                @Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })
+            </p>
+            <p>
+                <input class="customfiles" type="file" id="customfiles" name="ProfileImage" />
+                <label id="customfilelabel" for="customfiles">Choose Photo</label>
+            </p>
+            <button id="ButtonRegister" type="submit">SIGN UP</button>
+            <div class="validation-errors">
+                @if (ViewBag.Error != null)
+                {
+                    <p class="Error-Register">@ViewBag.Error</p>
+                }
+            </div>
+
+            @Html.ValidationSummary()
+        </div>
+    }
+
 	
 	
 	<div id="RedirectDiv">

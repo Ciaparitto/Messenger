@@ -29,7 +29,7 @@
 }
 
 #Buttonlogin {
-    width: 70%;
+    width: 10%;
 }
 
 .Button-Redirect {
@@ -68,7 +68,6 @@
 }
 
 #customfilelabel {
-
     padding: 10px 50px;
     background-color: rgb(51,187,255);
     color: black;
@@ -94,4 +93,19 @@
 
 .Form {
     width: 100%;
+}
+
+.validation-errors {
+    margin: 10px;
+    display: inline-block;
+}
+
+li, .Error-Register {
+    list-style-type: none;
+    margin: 10px 0px;
+    font-weight: bold;
+}
+
+ul {
+    padding: 0px;
 }

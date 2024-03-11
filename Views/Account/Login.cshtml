@@ -7,10 +7,11 @@
 	@using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "Form" }))
 	{
 		<div id="loginconainer">
-			@Html.ValidationSummary()
+	
 			<p class="login-paragraph"><span>Username</span> @Html.TextBoxFor(x => x.UserName, new { @class = "inputlogin" })</p>
 			<p class="login-paragraph"><span>Password</span> @Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })</p>
 			<button id="Buttonlogin" type="submit">LOGIN</button>
+			@Html.ValidationSummary()
 		</div>
 	}
 	<div id="RedirectDiv">
