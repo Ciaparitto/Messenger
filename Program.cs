@@ -20,6 +20,7 @@ builder.Services.AddSignalR(options =>
 });
 
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IImageSaver, ImageSaver>();
 builder.Services.AddScoped<IMessageGetter, MessageGetter>();
 builder.Services.AddScoped<IMessageService, MessageService>();

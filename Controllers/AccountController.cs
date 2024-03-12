@@ -11,17 +11,19 @@ namespace Messenger.Controllers
 {
 	public class AccountController : Controller
 	{
+		private readonly IUserService _UserService;
 		private readonly UserManager<UserModel> _UserManager;
 		private readonly SignInManager<UserModel> _SignInManager;
 		private readonly AppDbContext _Context;
 		private readonly IImageSaver _ImageSaver;
 
-		public AccountController(UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context, IImageSaver ImageSaver)
+		public AccountController(IUserService UserService, UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context, IImageSaver ImageSaver)
 		{
 			_UserManager = UserManager;
 			_SignInManager = SignInManager;
 			_Context = Context;
 			_ImageSaver = ImageSaver;
+			_UserService = UserService;
 
 		}
 		[HttpGet]
@@ -43,23 +45,26 @@ namespace Messenger.Controllers
 				};
 
 				var result = await _UserManager.CreateAsync(NewUser, UserData.Password);
+
 				if (result.Succeeded)
 				{
+					/*
 					if (_Context.Users.Where(User => User.Email == UserData.EmailAdress).ToList().Count != 0)
 					{
-						ViewBag.Error = $"Email {UserData.EmailAdress} is already taken";
+						//ViewBag.Error = $"Email {UserData.EmailAdress} is already taken"; this code msut be done before  creating user account
 					}
-					else
-					{
-                        if (ProfileImage != null && ProfileImage.Length > 0)
+					*/
+					
+						if (ProfileImage != null && ProfileImage.Length > 0)
 						{
-                            await _ImageSaver.SaveImage(ProfileImage, NewUser.Id);
-                        }
-                          
+							await _ImageSaver.SaveImage(ProfileImage, NewUser.Id);
+						}
+						await _UserService.ChangeRecoveryCode(NewUser.Id);
+
 						await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
 
 						return RedirectToAction("Index", "Home");
-					}
+					
 
 				}
 				else
