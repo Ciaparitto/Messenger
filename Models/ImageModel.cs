@@ -4,7 +4,7 @@ using Messenger.models;
 
 namespace Messenger.Models
 {
-	public class Image
+	public class ImageModel
 	{
 		[Key]
 		public int Id { get; set; }

@@ -16,13 +16,13 @@ namespace Messenger
 		}
 
 
-		public DbSet<Image> ImageList { get; set; }
+		public DbSet<ImageModel> ImageList { get; set; }
 
 		public virtual DbSet<MessageModel> MessageList { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Image>()
+			modelBuilder.Entity<ImageModel>()
 			.Ignore(e => e.Tag);
 
 			modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();

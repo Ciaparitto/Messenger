@@ -16,7 +16,7 @@ namespace Messenger.Services
 		{
 			File.CopyTo(MemoryStream);
 
-			var Image = new Image
+			var Image = new ImageModel
 			{
 				image = MemoryStream.ToArray(),
 				ContentType = File.ContentType,

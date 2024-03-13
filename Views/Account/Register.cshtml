@@ -2,7 +2,7 @@
 	<link href="~/css/LoginAndRegister.css" rel="stylesheet" />
 	<title>Sign Up</title>
 </head>
-@model Messenger.models.Register
+@model Messenger.models.RegisterModel
 <div id="LoginAndRedirect-Container">
     @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @class = "Form" }))
     {

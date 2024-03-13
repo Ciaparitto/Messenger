@@ -25,6 +25,7 @@ builder.Services.AddScoped<IImageSaver, ImageSaver>();
 builder.Services.AddScoped<IMessageGetter, MessageGetter>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IUserGetter, UserGetter>();
+builder.Services.AddScoped<IRecoveryCodeService, RecoveryCodeService>();
 
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7097/") });

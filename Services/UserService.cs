@@ -1,4 +1,6 @@
-﻿using Messenger.Services.Interfaces;
+﻿using Messenger.models;
+using Messenger.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace Messenger.Services
 {
@@ -6,23 +8,23 @@ namespace Messenger.Services
 	{
 		private readonly AppDbContext _Context;
 		private readonly IUserGetter _UserGetter;
-		public UserService(IUserGetter UserGetter, AppDbContext Context)
+		private readonly IRecoveryCodeService _RecoveryCodeGetter;
+		private readonly UserManager<UserModel> _UserManager;
+		public UserService(IUserGetter UserGetter, AppDbContext Context, IRecoveryCodeService RecoveryCodeGetter, UserManager<UserModel> UserManager)
 		{
 			_UserGetter = UserGetter;
 			_Context = Context;
+			_RecoveryCodeGetter = RecoveryCodeGetter;
+			_UserManager = UserManager;
 		}
-		public async Task ChangeRecoveryCode(string UserId)
+		public async Task ChangePassword(string Password, string UserId)
 		{
 			var User = await _UserGetter.GetUserById(UserId);
 			if (User != null)
 			{
-				Guid Guid = Guid.NewGuid();
-				string Code = Guid.ToString();
-				Code = Code.Replace("-", "").Substring(0, 10);
 
-				User.RecoveryCode = Code;
-				await _Context.SaveChangesAsync();
 			}
 		}
+
 	}
 }

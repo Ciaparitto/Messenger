@@ -32,7 +32,7 @@ namespace Messenger.Controllers
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Register(Register UserData, IFormFile? ProfileImage)
+		public async Task<IActionResult> Register(RegisterModel UserData, IFormFile? ProfileImage)
 		{
 
 
@@ -54,17 +54,17 @@ namespace Messenger.Controllers
 						//ViewBag.Error = $"Email {UserData.EmailAdress} is already taken"; this code msut be done before  creating user account
 					}
 					*/
-					
-						if (ProfileImage != null && ProfileImage.Length > 0)
-						{
-							await _ImageSaver.SaveImage(ProfileImage, NewUser.Id);
-						}
-						await _UserService.ChangeRecoveryCode(NewUser.Id);
 
-						await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
+					if (ProfileImage != null && ProfileImage.Length > 0)
+					{
+						await _ImageSaver.SaveImage(ProfileImage, NewUser.Id);
+					}
+					await _UserService.ChangeRecoveryCode(NewUser.Id);
 
-						return RedirectToAction("Index", "Home");
-					
+					await _SignInManager.PasswordSignInAsync(UserData.UserName, UserData.Password, false, false);
+
+					return RedirectToAction("Index", "Home");
+
 
 				}
 				else
@@ -83,7 +83,7 @@ namespace Messenger.Controllers
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Login(Login UserData)
+		public async Task<IActionResult> Login(LoginModel UserData)
 		{
 			if (ModelState.IsValid)
 			{
@@ -99,7 +99,22 @@ namespace Messenger.Controllers
 			await _SignInManager.SignOutAsync();
 			return RedirectToAction("Index", "Home");
 		}
+		[HttpGet]
+		public IActionResult ChangePassword()
+		{
+			return View();
+		}
+		[HttpPost]
+		public async Task<IActionResult> ChangePassword(ChangePasswordModel ChangePasswordModel)
+		{
+			if (ModelState.IsValid)
+			{
+				if ((ChangePasswordModel.NewPassword == ChangePasswordModel.ConfirmPassword))
+				{
 
-
+				}
+			}
+			return Redirect("/Login");
+		}
 	}
 }

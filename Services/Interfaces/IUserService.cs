@@ -2,6 +2,6 @@
 {
 	public interface IUserService
 	{
-		Task ChangeRecoveryCode(string UserId);
+		public Task ChangePassword(string Password, string UserId);
 	}
 }
