@@ -14,9 +14,9 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSignalR(options =>
 {
-	options.EnableDetailedErrors = true;
-	options.KeepAliveInterval = TimeSpan.FromSeconds(20);
-	options.ClientTimeoutInterval = TimeSpan.FromSeconds(20);
+    options.EnableDetailedErrors = true;
+    options.KeepAliveInterval = TimeSpan.FromSeconds(20);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(20);
 });
 
 builder.Services.AddHttpClient();
@@ -28,28 +28,37 @@ builder.Services.AddScoped<IUserGetter, UserGetter>();
 builder.Services.AddScoped<IRecoveryCodeService, RecoveryCodeService>();
 
 
+
+
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromMinutes(10);
+});
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7097/") });
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-	options.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbMessenger;Integrated Security=True"),
-	ServiceLifetime.Scoped);
+    options.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbMessenger;Integrated Security=True"),
+    ServiceLifetime.Scoped);
 builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
 {
-	options.Password.RequireDigit = false;
-	options.Password.RequiredLength = 2;
-	options.Password.RequireNonAlphanumeric = false;
-	options.Password.RequireLowercase = false;
-	options.Password.RequireUppercase = false;
-}).AddEntityFrameworkStores<AppDbContext>();
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 2;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+}).AddEntityFrameworkStores<AppDbContext>()
+  .AddDefaultTokenProviders()
+  .AddTokenProvider<DataProtectorTokenProvider<UserModel>>("TokenProvider");
 
 
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Error");
-	app.UseHsts();
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -62,7 +71,7 @@ app.MapFallbackToPage("/_Host");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllerRoute(
-	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
