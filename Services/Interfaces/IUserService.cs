@@ -1,7 +1,9 @@
-﻿namespace Messenger.Services.Interfaces
+﻿using Messenger.models;
+
+namespace Messenger.Services.Interfaces
 {
-    public interface IUserService
-    {
-        public Task ChangePassword(string UserId, string Token, string Password);
-    }
+	public interface IUserService
+	{
+		public Task ChangePassword(UserModel User, string Password);
+	}
 }

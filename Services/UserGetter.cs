@@ -55,5 +55,10 @@ namespace Messenger.Services
 			}
 			return UserList;
 		}
+		public async Task<UserModel> GetUserByEmail(string Email)
+		{
+			var User = await _UserManager.FindByEmailAsync(Email);
+			return User;
+		}
 	}
 }

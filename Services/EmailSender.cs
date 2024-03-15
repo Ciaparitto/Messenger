@@ -5,31 +5,29 @@ using System.Net.Mail;
 
 namespace Messenger.Services
 {
-	public class EmailSender : IEmailSender
-	{
-		private readonly IUserGetter _UserGetter;
-		public EmailSender(IUserGetter userGetter)
-		{
-			_UserGetter = userGetter;
-		}
-		public async Task SendEmail(string Email, string Subject, string Contnet, string UserId)
-		{
-			var Mail = "Test2Mail@gmail.com";
-			var MailPassword = "Password";
+    public class EmailSender : IEmailSender
+    {
 
-			var MailClient = new SmtpClient("smtp.gmail.com", 587)
-			{
-				EnableSsl = true,
-				Credentials = new NetworkCredential(Mail, MailPassword)
-			};
+        public Task SendEmail(string Email, string RecoveryCode)
+        {
+            var Mail = "RecoveryCodeMessenger@outlook.com";
+            var MailPassword = "aBc987654321!134";
 
-			await MailClient.SendMailAsync(
-			   new MailMessage(
-				   from: Mail,
-				   to: Email,
-				   Subject,
-				   Contnet
-				   ));
-		}
-	}
+            var MailClient = new SmtpClient("smtp-mail.outlook.com", 587)
+            {
+                EnableSsl = true,
+                Credentials = new NetworkCredential(Mail, MailPassword)
+            };
+            var Subject = "Password recovery code";
+            var Content = $"Your password recovery code: {RecoveryCode}";
+
+            return MailClient.SendMailAsync(
+               new MailMessage(
+                   from: Mail,
+                   to: Email,
+                   Subject,
+                   Content
+                   ));
+        }
+    }
 }

@@ -1,0 +1,9 @@
+﻿@page "/GetRecoveryCode"
+@model Messenger.Models.EmailModel
+
+@using (Html.BeginForm("GetRecoveryCode", "Account", FormMethod.Post, new { @class = "GetRecoveryCode-Form" }))
+{
+	@Html.ValidationSummary()
+	<p class="GetRecoveryCode-Paragraph"><span>Email Adress: </span>@Html.TextBoxFor(x => x.Email);</p>
+	<button class="GetRecoveryCode-Button" type="submit" >Send Email</button>
+}

@@ -16,15 +16,22 @@ namespace Messenger.Controllers
         private readonly SignInManager<UserModel> _SignInManager;
         private readonly AppDbContext _Context;
         private readonly IImageSaver _ImageSaver;
+        private readonly IUserGetter _UserGetter;
+        private readonly IRecoveryCodeGetter _RecoveryCodeGetter;
+        private readonly IRecoveryCodeGenerator _RecoveryCodeGenerator;
+        private readonly IEmailSender _EmailSender;
 
-        public AccountController(IUserService UserService, UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context, IImageSaver ImageSaver)
+        public AccountController(IEmailSender EmailSender, IRecoveryCodeGenerator RecoveryCodeGenerator, IRecoveryCodeGetter RecoveryCodeGetter, IUserService UserService, UserManager<UserModel> UserManager, SignInManager<UserModel> SignInManager, AppDbContext Context, IImageSaver ImageSaver, IUserGetter UserGetter)
         {
             _UserManager = UserManager;
             _SignInManager = SignInManager;
             _Context = Context;
             _ImageSaver = ImageSaver;
             _UserService = UserService;
-
+            _UserGetter = UserGetter;
+            _RecoveryCodeGetter = RecoveryCodeGetter;
+            _RecoveryCodeGenerator = RecoveryCodeGenerator;
+            _EmailSender = EmailSender;
         }
         [HttpGet]
         public IActionResult Register()
@@ -43,17 +50,17 @@ namespace Messenger.Controllers
                     Email = UserData.EmailAdress,
                     UserName = UserData.UserName,
                 };
+                if (_Context.Users.Where(User => User.Email == UserData.EmailAdress).ToList().Count != 0)
+                {
+                    ViewBag.Error = $"Email {UserData.EmailAdress} is already taken";
+                    return View();
+                }
 
                 var result = await _UserManager.CreateAsync(NewUser, UserData.Password);
 
                 if (result.Succeeded)
                 {
-                    /*
-					if (_Context.Users.Where(User => User.Email == UserData.EmailAdress).ToList().Count != 0)
-					{
-						//ViewBag.Error = $"Email {UserData.EmailAdress} is already taken"; this code msut be done before  creating user account
-					}
-					*/
+                   
 
                     if (ProfileImage != null && ProfileImage.Length > 0)
                     {
@@ -100,9 +107,13 @@ namespace Messenger.Controllers
             return RedirectToAction("Index", "Home");
         }
         [HttpGet]
-        public IActionResult ChangePassword()
+        public IActionResult ChangePassword(string Email)
         {
-            return View();
+            var ChangePasswordModel = new ChangePasswordModel
+            {
+                Email = Email
+            };
+            return View(ChangePasswordModel);
         }
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel ChangePasswordModel)
@@ -111,10 +122,32 @@ namespace Messenger.Controllers
             {
                 if ((ChangePasswordModel.NewPassword == ChangePasswordModel.ConfirmPassword))
                 {
-                    await _UserService.ChangePassword(ChangePasswordModel.UserId, ChangePasswordModel.RecoveryCode, ChangePasswordModel.NewPassword);
+                    var User = await _UserGetter.GetUserByEmail(ChangePasswordModel.Email);
+
+                    var UserRecoveryCode = _RecoveryCodeGetter.GetRecoveryCode(User.Id);
+
+                    if (UserRecoveryCode == ChangePasswordModel.RecoveryCode)
+                    {
+                        await _UserService.ChangePassword(User, ChangePasswordModel.NewPassword);
+                        return Redirect("/");
+                    }
                 }
             }
-            return Redirect("/Login");
+            return View(ChangePasswordModel);
+        }
+        [HttpGet]
+        public IActionResult GetRecoveryCode()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetRecoveryCode(EmailModel EmailModel)
+        {
+            var User = await _UserGetter.GetUserByEmail(EmailModel.Email);
+            await _RecoveryCodeGenerator.ChangeRecoveryCode(User.Id);
+            var RecoveryCode = _RecoveryCodeGetter.GetRecoveryCode(User.Id);
+            await _EmailSender.SendEmail(EmailModel.Email, RecoveryCode);
+            return RedirectToAction("ChangePassword", "Account", new { Email = EmailModel.Email });
         }
     }
 }

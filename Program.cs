@@ -25,8 +25,9 @@ builder.Services.AddScoped<IImageSaver, ImageSaver>();
 builder.Services.AddScoped<IMessageGetter, MessageGetter>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IUserGetter, UserGetter>();
-builder.Services.AddScoped<IRecoveryCodeService, RecoveryCodeService>();
-
+builder.Services.AddScoped<IRecoveryCodeGetter, RecoveryCodeGetter>();
+builder.Services.AddScoped<IRecoveryCodeGenerator, RecoveryCodeGenerator>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 
 

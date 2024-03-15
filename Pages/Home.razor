@@ -17,7 +17,7 @@
 @inject UserManager<UserModel> _userManager
 @inject IUserGetter _UserGetter
 @inject IMessageGetter _MessageGetter
-@inject IRecoveryCodeService _RecoveryCodeService
+@inject IEmailSender _EmailSender
 
 <link href="css/style.css" rel="stylesheet">
 <PageTitle>Home</PageTitle>
@@ -147,8 +147,8 @@
                 UserList = await _UserGetter.GetUsers(LoggedUser.Id);
                 StateHasChanged();
             });
+         
 
-            await _RecoveryCodeService.ChangeRecoveryCode(LoggedUser.Id);
             await ChangeMessageNotification();
             await GetOnlineFriends();
            
