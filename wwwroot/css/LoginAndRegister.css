@@ -1,26 +1,25 @@
-﻿#LoginAndRedirect-Container, #registerContainer, #loginconainer {
+﻿* {
+    margin: 0px;
+    color: white;
+}
+#LoginAndRedirect-Container,#Login-Main, #Register-Main, #Register-Container, #Login-container {
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
     margin: 0px;
     padding: 0px;
 }
 
-#loginconainer, #registerContainer {
+#Login-container, #Register-Container {
     width: 100%;
+    height: 20vh;
 }
 
-#Buttonlogin, #ButtonRegister {
-    background-color: rgb(51,187,255);
-    border-radius: 20px;
-    padding: 10px;
-    margin: 0px;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+#Login-Main, #Register-Main {
+    width: 100%;
+    background-image: linear-gradient(rgb(64, 64, 64),rgb(38, 38, 38) );
+    height: 100%;
+
 }
 
 #ButtonRegister {
@@ -28,24 +27,34 @@
     width: 10%;
 }
 
-#Buttonlogin {
-    width: 10%;
+#Button-Login, #Button-Register {
+    background-color: rgb(64, 64, 64);
+    border: 3px solid;
+    border-color: rgb(115,115,115);
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-weight: bold;
+    margin: 20px;
 }
 
 .Button-Redirect {
-    width: 12.5%;
-    text-decoration: none;
-    color: black;
-    margin: 0;
+    background-color: rgb(64, 64, 64);
+    border: 3px solid;
+    border-color: rgb(115,115,115);
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-weight: bold;
+    text-decoration:none;
+    margin:5px;
 }
 
-#RedirectDiv {
+.RedirectDiv {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-top: 30px;
+    margin: 20px;
 }
 
 #inputSearch, .inputlogin {
@@ -54,45 +63,54 @@
     border-radius: 15px;
 }
 
-.inputlogin {
+.Login-Input, .Register-Input {
+    padding: 2px;
+    margin: 10px 0px;
+    border: 3px solid;
+    border-color: rgb(115,115,115);
+    border-radius: 5px;
+}
+input[type="text"], input[type="password"] {
+    background-color: rgb(179, 179, 179);
+
     width: 100%;
 }
-
-.info-paragraph {
+.Register-Paragraph {
     text-align: center;
     width: 10%;
 }
+.Register-ParagraphFiles {
+    text-align: center;
+    width: 11%;
+    margin:20px;
+}
 
-.login-paragraph {
+.Login-Paragraph {
     text-align: center;
 }
 
-#customfilelabel {
-    padding: 10px 50px;
-    background-color: rgb(51,187,255);
-    color: black;
-    border: none;
+#CustomFile-Label {
+    padding: 10px 50px; 
     cursor: pointer;
-    border-radius: 20px;
     text-align: center;
+    background-color: rgb(64, 64, 64);
+    border: 3px solid;
+    border-color: rgb(115,115,115);
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration:none;
+ 
+   
 }
 
-#customfiles {
+#CustomFiles {
     display: none;
 }
 
-.Button-Redirect {
-    background-color: rgb(51,187,255);
-    padding: 10px;
-    display: table;
-    border-radius: 15px;
-    border: none;
-    text-align: center;
-    float: left;
-}
 
 .Form {
     width: 100%;
+   margin:150px;
 }
 
 .validation-errors {

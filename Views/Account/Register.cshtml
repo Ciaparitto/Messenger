@@ -3,31 +3,32 @@
 	<title>Sign Up</title>
 </head>
 @model Messenger.models.RegisterModel
-<div id="LoginAndRedirect-Container">
+
+<main id="Register-Main">
     @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @class = "Form" }))
     {
-        <div id="registerContainer">
+        <div id="Register-Container">
 
-            <p class="info-paragraph">
+            <p class="Register-Paragraph">
                 <span>Username</span>
                 <br />
-                @Html.TextBoxFor(x => x.UserName, new { @class = "inputlogin" })
+                @Html.TextBoxFor(x => x.UserName, new { @class = "Register-Input" })
             </p>
-            <p class="info-paragraph">
+            <p class="Register-paragraph">
                 <span>Email Adress</span>
                 <br />
-                @Html.TextBoxFor(x => x.EmailAdress, new { @class = "inputlogin" })
+                @Html.TextBoxFor(x => x.EmailAdress, new { @class = "Register-Input" })
             </p>
-            <p class="info-paragraph">
+            <p class="Register-paragraph">
                 <span>Password</span>
                 <br />
-                @Html.PasswordFor(x => x.Password, new { @class = "inputlogin" })
+                @Html.PasswordFor(x => x.Password, new { @class = "Register-Input" })
             </p>
-            <p>
-                <input class="customfiles" type="file" id="customfiles" name="ProfileImage" />
-                <label id="customfilelabel" for="customfiles">Choose Photo</label>
+            <p class="Register-paragraphFiles">
+                <input class="CustomFiles" type="file" id="CustomFiles" name="ProfileImage" />
+                <label id="CustomFile-Label" for="CustomFiles">Choose Photo</label>
             </p>
-            <button id="ButtonRegister" type="submit">SIGN UP</button>
+            <button id="Button-Register" type="submit">SIGN UP</button>
             <div class="validation-errors">
                 @if (ViewBag.Error != null)
                 {
@@ -41,8 +42,8 @@
 
 	
 	
-	<div id="RedirectDiv">
+	<div class="RedirectDiv">
 		<h3>If you have account </h3>
 		@Html.ActionLink("LOGIN", "Login", "Account", null, new { @class = "Button-Redirect" })
 	</div>
-</div>
+</main>

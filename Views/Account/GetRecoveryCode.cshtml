@@ -1,9 +1,15 @@
 ﻿@page "/GetRecoveryCode"
 @model Messenger.Models.EmailModel
-
-@using (Html.BeginForm("GetRecoveryCode", "Account", FormMethod.Post, new { @class = "GetRecoveryCode-Form" }))
+<head>
+	<link href="~/css/GetRecoveryCodeStyle.css" rel="stylesheet" />
+	<title>Get Recovery Code</title>
+</head>
+<main id="GetRecoveryCode-Main">
+<h2>Type your email adress to  receive recovery code</h2>
+@using (Html.BeginForm("GetRecoveryCode", "Account", FormMethod.Post, new { @id = "GetRecoveryCode-Form" }))
 {
 	@Html.ValidationSummary()
-	<p class="GetRecoveryCode-Paragraph"><span>Email Adress: </span>@Html.TextBoxFor(x => x.Email);</p>
+	<p class="GetRecoveryCode-Paragraph"><span>Email Adress </span> <br />@Html.TextBoxFor(x => x.Email, new { @class = "GetRecoveryCode-Input" })</p>
 	<button class="GetRecoveryCode-Button" type="submit" >Send Email</button>
 }
+</main>

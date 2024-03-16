@@ -143,11 +143,15 @@ namespace Messenger.Controllers
         [HttpPost]
         public async Task<IActionResult> GetRecoveryCode(EmailModel EmailModel)
         {
-            var User = await _UserGetter.GetUserByEmail(EmailModel.Email);
-            await _RecoveryCodeGenerator.ChangeRecoveryCode(User.Id);
-            var RecoveryCode = _RecoveryCodeGetter.GetRecoveryCode(User.Id);
-            await _EmailSender.SendEmail(EmailModel.Email, RecoveryCode);
-            return RedirectToAction("ChangePassword", "Account", new { Email = EmailModel.Email });
+            if (ModelState.IsValid)
+            {
+                var User = await _UserGetter.GetUserByEmail(EmailModel.Email);
+                await _RecoveryCodeGenerator.ChangeRecoveryCode(User.Id);
+                var RecoveryCode = _RecoveryCodeGetter.GetRecoveryCode(User.Id);
+                await _EmailSender.SendEmail(EmailModel.Email, RecoveryCode);
+                return RedirectToAction("ChangePassword", "Account", new { Email = EmailModel.Email });
+            }
+            return View(EmailModel);
         }
     }
 }
