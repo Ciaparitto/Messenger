@@ -8,7 +8,13 @@
     @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @class = "Form" }))
     {
         <div id="Register-Container">
-
+            @Html.ValidationSummary()
+            <div class="validation-errors">
+                @if (ViewBag.Error != null)
+                {
+                    <p class="Error-Register">@ViewBag.Error</p>
+                }
+            </div>         
             <p class="Register-Paragraph">
                 <span>Username</span>
                 <br />
@@ -29,14 +35,7 @@
                 <label id="CustomFile-Label" for="CustomFiles">Choose Photo</label>
             </p>
             <button id="Button-Register" type="submit">SIGN UP</button>
-            <div class="validation-errors">
-                @if (ViewBag.Error != null)
-                {
-                    <p class="Error-Register">@ViewBag.Error</p>
-                }
-            </div>
-
-            @Html.ValidationSummary()
+           
         </div>
     }
 

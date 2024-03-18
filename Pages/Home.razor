@@ -31,7 +31,7 @@
 			<button class="UserList-Button" @onclick="@(() => LogOut())">LogOut</button>
 		</form>
 
-		<form action="/Account/ChangePasswordByPassword" method="post" class="Home-Form">
+		<form action="/Password/ChangePasswordByPassword" method="post" class="Home-Form">
 			<input type="hidden" value="@LoggedUser.Id" name="UserId"/>
 			<h3>CHANGE PASSWORD</h3>
 			<span class="ChangePassword-Span">Current password<input class="InputSearch" name="CurrentPassword" type="password" /></span>
@@ -41,7 +41,7 @@
 			<button class="UserList-Button" type="submit">Change Password</button>
 
 		</form>
-		<form action="/Account/ChangeUsername" method="post" class="Home-Form">
+		<form action="/Username/ChangeUsername" method="post" class="Home-Form">
 			<input type="hidden" value="@LoggedUser.Id" name="UserId" />
 			<h3>CHANGE USERNAME</h3>
 			<span class="ChangePassword-Span">Current password<input class="InputSearch" name="CurrentPassword" type="password" /></span>

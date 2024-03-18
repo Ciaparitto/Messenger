@@ -57,6 +57,12 @@ li {
     margin: 5px;
     list-style-type: none;
 }
+
 ul {
     padding: 0px;
+}
+
+.validation-errors {
+    margin: 10px;
+    display: inline-block;
 }
