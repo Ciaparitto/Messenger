@@ -1,3 +1,4 @@
+
 function AddMessageToViewWithImageId(message, ElementClassNameMess, ProfileId, ElementClassNameImg, MessageId) {
     var MessageImgContainer = document.createElement("div");
     var ImgContainer = document.createElement("div");
@@ -7,7 +8,7 @@ function AddMessageToViewWithImageId(message, ElementClassNameMess, ProfileId, E
     MessageContainerChild.className = "MessageContainerChild" + ElementClassNameMess;
     MessageImgContainer.className = ElementClassNameMess + "Container";
 
-    var MessageArea = document.getElementById("messageConatiner");
+    var MessageArea = document.getElementById("MessageConatiner");
     MessageArea.appendChild(MessageImgContainer);
     MessageImgContainer.appendChild(MessageContainerChild);
     var Message = document.createElement("div");
@@ -39,7 +40,7 @@ function AddMessageToViewWithImageURL(message, ElementClassNameMess, Url, Elemen
     MessageContainerChild.className = "MessageContainerChild" + ElementClassNameMess;
     MessageImgContainer.className = ElementClassNameMess + "Container";
 
-    var MessageArea = document.getElementById("messageConatiner");
+    var MessageArea = document.getElementById("MessageConatiner");
     MessageArea.appendChild(MessageImgContainer);
     MessageImgContainer.appendChild(MessageContainerChild);
     var Message = document.createElement("div");
@@ -69,15 +70,15 @@ function AddMessageToViewWithImageURL(message, ElementClassNameMess, Url, Elemen
     scrollToBottom();
 }
 function scrollToBottom() {
-    var div = document.getElementById("messageConatiner");
+    var div = document.getElementById("MessageConatiner");
     div.scrollTop = div.scrollHeight;
 }
 
-function ChangePhoto(PhotoId) {
-    var photo = document.getElementById(PhotoId);
-    photo.src = "/Icons/message-read.png";
-}
 function DeleteMessage(MessageId, MessageObj) {
     fetch(`/DeleteMessage/${MessageId}`);
     MessageObj.remove();
+}
+function ChangePhoto(PhotoId) {
+    var photo = document.getElementById(PhotoId);
+    photo.src = "/Icons/message-read.png";
 }

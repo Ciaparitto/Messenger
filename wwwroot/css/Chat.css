@@ -12,10 +12,10 @@
 }
 
 .page {
-    background-color:rgb(77, 77, 77)
+    background-color: rgb(77, 77, 77)
 }
 
-#inputChat {
+#InputChat {
     width: 90%;
     padding: 0px;
     margin: 0px;
@@ -24,15 +24,12 @@
     background-color: rgb(64, 64, 64);
     border: 3px solid;
     border-color: rgb(115,115,115);
-
 }
 
 
-#inputSearch {
-    width: 30%;
-}
 
-#sendbutton {
+
+#SendButton {
     background-color: rgb(64, 64, 64);
     border: 3px solid;
     border-color: rgb(115,115,115);
@@ -42,7 +39,7 @@
     float: right;
 }
 
-#Home-button-container {
+#Home-Button-Container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -82,28 +79,27 @@
 }
 
 
-.creatorImg {
+.CreatorImg {
     float: right;
     height: 100%;
     padding-left: 5px;
 }
 
-.reciverImg {
+.ReciverImg {
     float: left;
     height: 100%;
     padding-right: 5px;
-
 }
 
-.MessageContainerChildcreatorMessages {
+.MessageContainerChildCreatorMessages {
     float: right;
 }
 
-.MessageContainerChildreciverMessages {
+.MessageContainerChildReciverMessages {
     float: left;
 }
 
-#messageConatiner {
+#MessageConatiner {
     width: 100%;
     height: 87vh;
     overflow: auto;
@@ -114,7 +110,7 @@
     background-image: linear-gradient(rgb(64, 64, 64),rgb(38, 38, 38) );
 }
 
-.creatorMessages {
+.CreatorMessages {
     background-color: rgb(64, 64, 64);
     border: 3px solid;
     border-color: rgb(115,115,115);
@@ -125,7 +121,7 @@
     border-radius: 15px;
 }
 
-.reciverMessages {
+.ReciverMessages {
     background-color: rgb(64, 64, 64);
     border: 3px solid;
     border-color: rgb(115,115,115);
@@ -140,9 +136,9 @@
     margin: 10px 0px;
 }
 
-#username-Chat {
+#Username-Chat {
     float: left;
-    margin:0px 10px;
+    margin: 0px 10px;
 }
 
 
@@ -162,7 +158,7 @@
 
 
 
-#sendbutton-container {
+#SendButton-Container {
     background-color: rgb(38, 38, 38);
 }
 
@@ -187,6 +183,7 @@
 .Message {
     float: left;
 }
+
 input[type="text"] {
     background-color: rgb(179, 179, 179);
     margin: 0px;

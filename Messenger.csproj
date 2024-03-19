@@ -55,7 +55,6 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="Shared\" />
-    <Folder Include="wwwroot\JavaScript\" />
   </ItemGroup>
 
   <ItemGroup>

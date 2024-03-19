@@ -10,16 +10,12 @@
 @using Messenger.Services;
 @using Messenger.models;
 
-
 @inject NavigationManager Navigation
 @inject AppDbContext _Context
 @inject IJSRuntime JSRuntime
 @inject IUserGetter _UserGetter
 @inject IMessageGetter _MessageGetter
 @inject IMessageService _MessageService
-
-
-
 
 <PageTitle>Chat</PageTitle>
 
@@ -28,22 +24,22 @@
 @if (Receiver != null && User != null)
 {
 	<div id="ReciverInfo">
-		<div id="Home-button-container">
+		<div id="Home-Button-Container">
 			<button class="ButtonLayOut" @onclick="@(() => RedirectToPage("/"))">Main Page</button>
 		</div>
 		<div id="ImgAndUsername">
 			<img id="UserPhoto" src="@($"/DisplayImage/{Receiver.ProfileImageId}")" />
-			<h3 id="username-Chat">@Receiver.UserName</h3>
+			<h3 id="Username-Chat">@Receiver.UserName</h3>
 		</div>
 	</div>
 }
 
 
-<div id="messageConatiner">
+<div id="MessageConatiner">
 </div>
-<div id="sendbutton-container">
-	<input id="inputChat" type="text" name="Message" @bind="MessageContent" />
-	<button id="sendbutton" @onclick="() => SendMessage(MessageContent,Receiver.Id)">Write</button>
+<div id="SendButton-Container">
+	<input id="InputChat" type="text" name="Message" @bind="MessageContent" />
+	<button id="SendButton" @onclick="() => SendMessage(MessageContent,Receiver.Id)">Write</button>
 </div>
 
 
@@ -73,7 +69,7 @@
 
 		_HubConnection.On<string, string>("ReciveNotification", async (Message, MessageId) =>
 			{
-				AddMessageToViewWithImageId(AddBreakLines(Message), "reciverMessages", Receiver.ProfileImageId.ToString(), "reciverImg", MessageId);
+				AddMessageToViewWithImageId(AddBreakLines(Message), "ReciverMessages", Receiver.ProfileImageId.ToString(), "ReciverImg", MessageId);
 
 				JSRuntime.InvokeVoidAsync("scrollToBottom");
 				await _HubConnection.InvokeAsync("ReadMessages", Receiver.Id);
@@ -110,7 +106,6 @@
 				var Message = await _Context.MessageList.FindAsync(message.Id);
 				Message.IsRead = true;
 				await _Context.SaveChangesAsync();
-
 			}
 		}
 
@@ -127,17 +122,17 @@
 				{
 					if (Message.IsRead)
 					{
-						AddMessageToViewWithImageURL(AddBreakLines(Message.Content), "creatorMessages", "Icons/message-read.png", "creatorImg", Message.Id.ToString()); // image with id 6 have readed message icon
+						AddMessageToViewWithImageURL(AddBreakLines(Message.Content), "CreatorMessages", "Icons/message-read.png", "CreatorImg", Message.Id.ToString()); 
 					}
 					else
 					{
-						AddMessageToViewWithImageURL(AddBreakLines(Message.Content), "creatorMessages", "Icons/message-send.jpg", "creatorImg", Message.Id.ToString()); // image with id 13h ave sended message icon
+						AddMessageToViewWithImageURL(AddBreakLines(Message.Content), "CreatorMessages", "Icons/message-send.jpg", "CreatorImg", Message.Id.ToString());
 					}
 				}
 				else
 				{
 
-					AddMessageToViewWithImageId(AddBreakLines(Message.Content), "reciverMessages", Receiver.ProfileImageId.ToString(), "reciverImg", Message.Id.ToString());
+					AddMessageToViewWithImageId(AddBreakLines(Message.Content), "ReciverMessages", Receiver.ProfileImageId.ToString(), "ReciverImg", Message.Id.ToString());
 				}
 
 			}
@@ -175,19 +170,12 @@
 			this.MessageContent = "";
 			await _HubConnection.InvokeAsync("SendMessage", MessageContent, Receiver.Id, MessageId);
 
-
-			AddMessageToViewWithImageURL(AddBreakLines(MessageContent), "creatorMessages", "Icons/message-send.jpg", "creatorImg", MessageId);
+			AddMessageToViewWithImageURL(AddBreakLines(MessageContent), "CreatorMessages", "Icons/message-send.jpg", "creatorImg", MessageId);
 			await JSRuntime.InvokeVoidAsync("scrollToBottom");
-
 
 			await _HubConnection.InvokeAsync("ReadMessages", Receiver.Id);
 			await _HubConnection.InvokeAsync("ChangeMessageNotification", Receiver.Id);
-
-
-
 		}
-
-
 	}
 
 	private string AddBreakLines(string Message)
