@@ -39,7 +39,7 @@
 </div>
 <div id="SendButton-Container">
 	<input id="InputChat" type="text" name="Message" @bind="MessageContent" />
-	<button id="SendButton" @onclick="() => SendMessage(MessageContent,Receiver.Id)">Write</button>
+	<button id="SendButton" @onclick="() => SendMessage(MessageContent,Receiver.Id)">Send</button>
 </div>
 
 
@@ -170,7 +170,7 @@
 			this.MessageContent = "";
 			await _HubConnection.InvokeAsync("SendMessage", MessageContent, Receiver.Id, MessageId);
 
-			AddMessageToViewWithImageURL(AddBreakLines(MessageContent), "CreatorMessages", "Icons/message-send.jpg", "creatorImg", MessageId);
+			AddMessageToViewWithImageURL(AddBreakLines(MessageContent), "CreatorMessages", "Icons/message-send.jpg", "CreatorImg", MessageId);
 			await JSRuntime.InvokeVoidAsync("scrollToBottom");
 
 			await _HubConnection.InvokeAsync("ReadMessages", Receiver.Id);
