@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+var _AppSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
@@ -40,7 +40,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;Initial Catalog=DbMessenger;Integrated Security=True"),
+    options.UseSqlServer(_AppSettings.ConnectionString),
     ServiceLifetime.Scoped);
 builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
 {
