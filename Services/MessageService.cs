@@ -21,7 +21,7 @@ namespace Messenger.Services
 				ReciverId = ReceiverId
 			};
 
-			await _Context.MessageList.AddAsync(Message);
+			_Context.MessageList.Add(Message);
 			await _Context.SaveChangesAsync();
 			return Message.Id.ToString();
 		}
